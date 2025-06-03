@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-
-import 'package:multas/models/db.dart';
-import 'package:multas/models/multas.dart';
 
 void main() {
   runApp(const MyApp());
