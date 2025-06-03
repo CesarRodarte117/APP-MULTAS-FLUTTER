@@ -30,8 +30,8 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  intl: ^0.20.2        # Latest stable (consider upgrading if needed)
-  sqflite: ^2.4.2      # Latest stable (fixes NDK issues)
+  intl: ^0.18.1        # Latest stable (consider upgrading if needed)
+  sqflite: ^2.5.0      # Latest stable (fixes NDK issues)
   path: ^1.9.1         # Already up-to-date
 
   # The following adds the Cupertino Icons font to your application.
