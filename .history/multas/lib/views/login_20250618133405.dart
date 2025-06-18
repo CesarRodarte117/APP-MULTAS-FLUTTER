@@ -20,19 +20,17 @@ Future<String> obtenerAndroidID() async {
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
   AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
   androidId =
-      'ID:' +
+      'ID' +
       androidInfo.id +
-      '--MODELO:' +
+      ' -MODEL ' +
       androidInfo.model +
-      '--FABRICANTE:' +
+      ' - ' +
       androidInfo.brand +
-      '--ANDROID:' +
-      androidInfo.version.release +
-      '--NOMBRE:' +
-      androidInfo.name;
+      ' - ' +
+      androidInfo.version.release;
   ;
 
-  return androidId ?? 'No disponible';
+  return androidInfo.id ?? 'No disponible';
 }
 
 class LoginPage extends StatefulWidget {
@@ -67,6 +65,7 @@ class _loginPageState extends State<LoginPage> {
             serial.isEmpty ||
             serial == 'No disponible') {
           serial = await obtenerAndroidID();
+          serial = 'ID' + serial;
         } else {
           serial = 'SN' + serial;
         }

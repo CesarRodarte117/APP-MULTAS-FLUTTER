@@ -61,7 +61,8 @@ class _loginPageState extends State<LoginPage> {
         });
 
         //S/N
-        String? serial = await obtenerAndroidSN();
+        String? serial = '';
+        //await obtenerAndroidSN();
 
         if (serial == 'unknown' ||
             serial.isEmpty ||

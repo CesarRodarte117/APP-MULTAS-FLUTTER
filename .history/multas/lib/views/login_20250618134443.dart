@@ -22,14 +22,12 @@ Future<String> obtenerAndroidID() async {
   androidId =
       'ID:' +
       androidInfo.id +
-      '--MODELO:' +
+      '_MODELO:' +
       androidInfo.model +
-      '--FABRICANTE:' +
+      '_FABRICANTE:' +
       androidInfo.brand +
-      '--ANDROID:' +
-      androidInfo.version.release +
-      '--NOMBRE:' +
-      androidInfo.name;
+      '_ANDROID:' +
+      androidInfo.version.release;
   ;
 
   return androidId ?? 'No disponible';
@@ -61,7 +59,8 @@ class _loginPageState extends State<LoginPage> {
         });
 
         //S/N
-        String? serial = await obtenerAndroidSN();
+        String? serial = '';
+        //await obtenerAndroidSN();
 
         if (serial == 'unknown' ||
             serial.isEmpty ||

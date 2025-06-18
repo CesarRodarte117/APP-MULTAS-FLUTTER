@@ -5,9 +5,17 @@ import 'package:multas/views/menu_principal.dart';
 
 // CONTROLLERS
 
+import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+
 // ANDROID S/N --Android 9 (Pie)	API 28	2018
 import 'package:permission_handler/permission_handler.dart';
 import 'package:device_info_plus/device_info_plus.dart';
+
+Future<String> getExternalStoragePath() async {
+  Directory? directory = await getExternalStorageDirectory();
+  return directory?.path ?? "";
+}
 
 Future<String> obtenerAndroidSN() async {
   DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
