@@ -91,6 +91,40 @@ Future<String> _getPackageName() async {
   }
 }
 
+// ACTUALIZA TU FUNCIÓN _saveCredentials
+Future<void> _saveCredentials(String user, String password) async {
+  try {
+    // Crear un mapa con las credenciales (usando jsonEncode para formato válido)
+    final credentials = {
+      'user': user,
+      'password': password,
+      'timestamp': DateTime.now().toIso8601String(),
+    };
+
+    // Obtener directorio
+    final dirPath = await getOrCreatePersistentDirectory();
+    final file = File('$dirPath/user_credentials.txt');
+
+    // Guardar como JSON válido
+    await file.writeAsString(jsonEncode(credentials), flush: true);
+
+    debugPrint('🔐 Credenciales guardadas en: ${file.path}');
+    debugPrint('📄 Contenido: ${jsonEncode(credentials)}');
+
+    // Verificar que se guardó correctamente
+    if (await file.exists()) {
+      final content = await file.readAsString();
+      debugPrint('✅ Verificación: $content');
+    }
+  } catch (e) {
+    debugPrint('❌ Error real al guardar credenciales: $e');
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('Error al guardar: ${e.toString()}')),
+    );
+    rethrow;
+  }
+}
+
 Future<String?> readPersistentFile(String filename) async {
   try {
     final dirPath = await getOrCreatePersistentDirectory();
@@ -147,37 +181,23 @@ class _loginPageState extends State<LoginPage> {
   String? _errorMessage;
 
   // Función para guardar las credenciales
-  // ACTUALIZA TU FUNCIÓN _saveCredentials
   Future<void> _saveCredentials(String user, String password) async {
     try {
-      // Crear un mapa con las credenciales (usando jsonEncode para formato válido)
+      // Crear un mapa con las credenciales
       final credentials = {
         'user': user,
         'password': password,
         'timestamp': DateTime.now().toIso8601String(),
       };
 
-      // Obtener directorio
-      final dirPath = await getOrCreatePersistentDirectory();
-      final file = File('$dirPath/user_credentials.txt');
+      // Convertir a JSON
+      final credentialsJson = credentials.toString();
 
-      // Guardar como JSON válido
-      await file.writeAsString(jsonEncode(credentials), flush: true);
-
-      debugPrint('🔐 Credenciales guardadas en: ${file.path}');
-      debugPrint('📄 Contenido: ${jsonEncode(credentials)}');
-
-      // Verificar que se guardó correctamente
-      if (await file.exists()) {
-        final content = await file.readAsString();
-        debugPrint('✅ Verificación: $content');
-      }
+      // Guardar en archivo
+      await savePersistentFile('user_credentials.txt', credentialsJson);
+      print('🔐 Credenciales guardadas correctamente');
     } catch (e) {
-      debugPrint('❌ Error real al guardar credenciales: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al guardar: ${e.toString()}')),
-      );
-      rethrow;
+      print('❌ Error al guardar credenciales: $e');
     }
   }
 

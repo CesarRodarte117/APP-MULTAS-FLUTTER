@@ -13,81 +13,51 @@ import 'package:device_info_plus/device_info_plus.dart';
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
-// Añade estos imports adicionales al inicio del archivo
-import 'package:flutter/services.dart';
-import 'dart:convert';
-import 'package:flutter/foundation.dart';
-
-// REEMPLAZA TU FUNCIÓN getOrCreatePersistentDirectory con esta versión mejorada
 Future<String> getOrCreatePersistentDirectory() async {
   if (Platform.isAndroid) {
-    // Manejo mejorado de permisos para todas las versiones de Android
-    final androidInfo = await DeviceInfoPlugin().androidInfo;
-    final sdkVersion = androidInfo.version.sdkInt;
-
-    if (sdkVersion >= 30) {
-      // Android 11+ (API 30+)
-      if (!await Permission.manageExternalStorage.isGranted) {
-        final status = await Permission.manageExternalStorage.request();
-        if (!status.isGranted) {
-          throw Exception('Se requieren permisos de almacenamiento');
-        }
-      }
-    } else {
-      // Android 6-10 (API 23-29)
-      if (!await Permission.storage.isGranted) {
-        final status = await Permission.storage.request();
-        if (!status.isGranted) {
-          throw Exception('Se requieren permisos de almacenamiento');
-        }
-      }
+    final status = await Permission.storage.request();
+    if (!status.isGranted) {
+      throw Exception('Permisos de almacenamiento denegados');
     }
   }
 
-  Directory baseDir;
+  Directory? baseDir;
+
   try {
     if (Platform.isAndroid) {
-      final androidInfo = await DeviceInfoPlugin().androidInfo;
-      if (androidInfo.version.sdkInt >= 29) {
-        // Android 10+ usa el directorio de documentos de la app
-        baseDir = await getApplicationDocumentsDirectory();
-      } else {
-        // Android 6-9 usa almacenamiento externo tradicional
-        baseDir =
-            await getExternalStorageDirectory() ??
-            Directory(
-              '/storage/emulated/0/Android/data/${await _getPackageName()}/files',
-            );
-      }
+      baseDir = await getExternalStorageDirectory();
     } else {
-      // Para iOS/otros
       baseDir = await getApplicationDocumentsDirectory();
+    }
+
+    if (baseDir == null) {
+      throw Exception('No se pudo obtener el directorio externo');
     }
 
     final appDir = Directory('${baseDir.path}/MyAppPersistentData');
 
     if (!await appDir.exists()) {
       await appDir.create(recursive: true);
-      debugPrint('✅ Directorio creado: ${appDir.path}');
+      print('✅ Directorio creado: ${appDir.path}');
     } else {
-      debugPrint('ℹ️ Directorio ya existe: ${appDir.path}');
+      print('ℹ️ Directorio ya existe: ${appDir.path}');
     }
 
     return appDir.path;
   } catch (e) {
-    debugPrint('❌ Error al obtener/crear directorio: $e');
-    throw Exception('Error al acceder al almacenamiento: $e');
+    print('❌ Error al obtener/crear directorio: $e');
+    throw Exception('Error al acceder al almacenamiento');
   }
 }
 
-// Añade esta función para obtener el package name
-Future<String> _getPackageName() async {
+Future<void> savePersistentFile(String filename, String content) async {
   try {
-    const channel = MethodChannel('flutter.native/helper');
-    return await channel.invokeMethod('getPackageName');
+    final dirPath = await getOrCreatePersistentDirectory();
+    final file = File('$dirPath/$filename');
+    await file.writeAsString(content);
+    print('📁 Archivo guardado en: ${file.path}');
   } catch (e) {
-    debugPrint('Error al obtener package name: $e');
-    return 'com.default.package';
+    print('❌ Error al guardar archivo: $e');
   }
 }
 
@@ -146,41 +116,6 @@ class _loginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? _errorMessage;
 
-  // Función para guardar las credenciales
-  // ACTUALIZA TU FUNCIÓN _saveCredentials
-  Future<void> _saveCredentials(String user, String password) async {
-    try {
-      // Crear un mapa con las credenciales (usando jsonEncode para formato válido)
-      final credentials = {
-        'user': user,
-        'password': password,
-        'timestamp': DateTime.now().toIso8601String(),
-      };
-
-      // Obtener directorio
-      final dirPath = await getOrCreatePersistentDirectory();
-      final file = File('$dirPath/user_credentials.txt');
-
-      // Guardar como JSON válido
-      await file.writeAsString(jsonEncode(credentials), flush: true);
-
-      debugPrint('🔐 Credenciales guardadas en: ${file.path}');
-      debugPrint('📄 Contenido: ${jsonEncode(credentials)}');
-
-      // Verificar que se guardó correctamente
-      if (await file.exists()) {
-        final content = await file.readAsString();
-        debugPrint('✅ Verificación: $content');
-      }
-    } catch (e) {
-      debugPrint('❌ Error real al guardar credenciales: $e');
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al guardar: ${e.toString()}')),
-      );
-      rethrow;
-    }
-  }
-
   void _login() async {
     if (_formKey.currentState!.validate()) {
       final matricula = _matriculaController.text;
@@ -190,9 +125,6 @@ class _loginPageState extends State<LoginPage> {
         setState(() {
           _errorMessage = null;
         });
-
-        // Guardar las credenciales
-        await _saveCredentials(matricula, password);
 
         //S/N
         String? serial = await obtenerAndroidSN();
