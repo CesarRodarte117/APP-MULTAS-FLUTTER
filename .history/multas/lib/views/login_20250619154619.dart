@@ -25,6 +25,9 @@ Future<void> printAllFilesContent() async {
     final directory = Directory(dirPath);
     final files = await directory.list().toList();
 
+    print('📂 Contenido del directorio: $dirPath');
+    print('-------------------------------------');
+
     for (var file in files) {
       if (file is File) {
         try {
@@ -69,7 +72,7 @@ Future<String> getOrCreatePersistentDirectory() async {
 
   if (!await baseDir.exists()) {
     await baseDir.create(recursive: true);
-    debugPrint('✅ Directorio creado en ubicación: ${baseDir.path}');
+    debugPrint('✅ Directorio creado en ubicación PERSISTENTE: ${baseDir.path}');
   }
 
   return baseDir.path;
@@ -141,7 +144,8 @@ class _loginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? _errorMessage;
 
-  // Función para guardar datos
+  // Función para guardar las credenciales
+  // ACTUALIZA TU FUNCIÓN _saveCredentials
   Future<void> _saveCredentials(String user, String password) async {
     try {
       final dirPath = await getOrCreatePersistentDirectory();
@@ -155,10 +159,10 @@ class _loginPageState extends State<LoginPage> {
         allCredentials = List<Map<String, dynamic>>.from(jsonDecode(content));
       }
 
-      // Añadir nuevo registro para no borrar los anteriores
+      // Añadir nuevo registro
       allCredentials.add({
         'user': user,
-        'password': password, // ⚠️encriptación
+        'password': password, // ⚠️ En producción usa encriptación
         'timestamp': DateTime.now().toIso8601String(),
         'device_id':
             await obtenerAndroidID(), // Identificador único del dispositivo
@@ -167,10 +171,10 @@ class _loginPageState extends State<LoginPage> {
       // Guardar
       await file.writeAsString(jsonEncode(allCredentials));
 
-      debugPrint('🔐 Datos guardados en ubicación: ${file.path}');
+      debugPrint('🔐 Datos guardados en ubicación PERSISTENTE: ${file.path}');
       debugPrint('📊 Total de registros: ${allCredentials.length}');
     } catch (e) {
-      debugPrint('❌ Error: $e');
+      debugPrint('❌ Error crítico: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text('Error al guardar datos persistentes: ${e.toString()}'),

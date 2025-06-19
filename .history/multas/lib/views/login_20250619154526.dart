@@ -25,6 +25,9 @@ Future<void> printAllFilesContent() async {
     final directory = Directory(dirPath);
     final files = await directory.list().toList();
 
+    print('📂 Contenido del directorio: $dirPath');
+    print('-------------------------------------');
+
     for (var file in files) {
       if (file is File) {
         try {
@@ -69,7 +72,7 @@ Future<String> getOrCreatePersistentDirectory() async {
 
   if (!await baseDir.exists()) {
     await baseDir.create(recursive: true);
-    debugPrint('✅ Directorio creado en ubicación: ${baseDir.path}');
+    debugPrint('✅ Directorio creado en ubicación PERSISTENTE: ${baseDir.path}');
   }
 
   return baseDir.path;
@@ -141,41 +144,49 @@ class _loginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? _errorMessage;
 
-  // Función para guardar datos
+  // Función para guardar las credenciales
+  // ACTUALIZA TU FUNCIÓN _saveCredentials
   Future<void> _saveCredentials(String user, String password) async {
     try {
+      // 1. Obtener directorio
       final dirPath = await getOrCreatePersistentDirectory();
-      final file = File('$dirPath/multas_credentials.json');
+      final file = File('$dirPath/user_credentials.json'); // Cambiado a .json
 
-      List<Map<String, dynamic>> allCredentials = [];
-
-      // Leer datos existentes
+      // 2. Leer datos existentes (si el archivo ya existe)
+      List<Map<String, dynamic>> credentialsList = [];
       if (await file.exists()) {
-        final content = await file.readAsString();
-        allCredentials = List<Map<String, dynamic>>.from(jsonDecode(content));
+        try {
+          final content = await file.readAsString();
+          credentialsList = List<Map<String, dynamic>>.from(
+            jsonDecode(content),
+          );
+        } catch (e) {
+          debugPrint(
+            '⚠️ Error al leer archivo existente, creando uno nuevo: $e',
+          );
+        }
       }
 
-      // Añadir nuevo registro para no borrar los anteriores
-      allCredentials.add({
+      // 3. Añadir nuevo registro
+      credentialsList.add({
         'user': user,
-        'password': password, // ⚠️encriptación
+        'password': password, // ⚠️ En producción, usa encriptación
         'timestamp': DateTime.now().toIso8601String(),
-        'device_id':
-            await obtenerAndroidID(), // Identificador único del dispositivo
       });
 
-      // Guardar
-      await file.writeAsString(jsonEncode(allCredentials));
+      // 4. Guardar la lista completa
+      await file.writeAsString(jsonEncode(credentialsList), flush: true);
 
-      debugPrint('🔐 Datos guardados en ubicación: ${file.path}');
-      debugPrint('📊 Total de registros: ${allCredentials.length}');
+      // Debug
+      debugPrint('🔐 Datos guardados en: ${file.path}');
+      debugPrint('📄 Total de registros: ${credentialsList.length}');
+      debugPrint('✅ Último registro: ${jsonEncode(credentialsList.last)}');
     } catch (e) {
-      debugPrint('❌ Error: $e');
+      debugPrint('❌ Error al guardar los datos: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error al guardar datos persistentes: ${e.toString()}'),
-        ),
+        SnackBar(content: Text('Error al guardar: ${e.toString()}')),
       );
+      rethrow;
     }
   }
 

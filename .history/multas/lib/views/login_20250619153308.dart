@@ -25,6 +25,9 @@ Future<void> printAllFilesContent() async {
     final directory = Directory(dirPath);
     final files = await directory.list().toList();
 
+    print('📂 Contenido del directorio: $dirPath');
+    print('-------------------------------------');
+
     for (var file in files) {
       if (file is File) {
         try {
@@ -45,34 +48,64 @@ Future<void> printAllFilesContent() async {
 
 // Obtiene el directorio persistente de la aplicación
 Future<String> getOrCreatePersistentDirectory() async {
-  Directory baseDir;
-
   if (Platform.isAndroid) {
-    // Usar almacenamiento externo público
-    baseDir = Directory('/storage/emulated/0/Documents/MultasData');
-
-    // Verificar y solicitar permisos
+    // Manejo de permisos para todas las versiones de Android
     final androidInfo = await DeviceInfoPlugin().androidInfo;
-    if (androidInfo.version.sdkInt >= 30) {
+    final sdkVersion = androidInfo.version.sdkInt;
+
+    if (sdkVersion >= 30) {
+      // Android 11+ (API 30+)
       if (!await Permission.manageExternalStorage.isGranted) {
-        await Permission.manageExternalStorage.request();
+        final status = await Permission.manageExternalStorage.request();
+        if (!status.isGranted) {
+          throw Exception('Se requieren permisos de almacenamiento');
+        }
       }
     } else {
+      // Android 6-10 (API 23-29)
       if (!await Permission.storage.isGranted) {
-        await Permission.storage.request();
+        final status = await Permission.storage.request();
+        if (!status.isGranted) {
+          throw Exception('Se requieren permisos de almacenamiento');
+        }
       }
     }
-  } else {
-    // Para iOS/otros
-    baseDir = await getApplicationDocumentsDirectory();
   }
 
-  if (!await baseDir.exists()) {
-    await baseDir.create(recursive: true);
-    debugPrint('✅ Directorio creado en ubicación: ${baseDir.path}');
-  }
+  Directory baseDir;
+  try {
+    if (Platform.isAndroid) {
+      final androidInfo = await DeviceInfoPlugin().androidInfo;
+      if (androidInfo.version.sdkInt >= 29) {
+        // Android 10+ usa el directorio de documentos de la app
+        baseDir = await getApplicationDocumentsDirectory();
+      } else {
+        // Android 6-9 usa almacenamiento externo tradicional
+        baseDir =
+            await getExternalStorageDirectory() ??
+            Directory(
+              '/storage/emulated/0/Android/data/${await _getPackageName()}/files',
+            );
+      }
+    } else {
+      // Para iOS/otros
+      baseDir = await getApplicationDocumentsDirectory();
+    }
 
-  return baseDir.path;
+    final appDir = Directory('${baseDir.path}/MyAppPersistentData');
+
+    if (!await appDir.exists()) {
+      await appDir.create(recursive: true);
+      debugPrint('✅ Directorio creado: ${appDir.path}');
+    } else {
+      debugPrint('ℹ️ Directorio ya existe: ${appDir.path}');
+    }
+
+    return appDir.path;
+  } catch (e) {
+    debugPrint('❌ Error al obtener/crear directorio: $e');
+    throw Exception('Error al acceder al almacenamiento: $e');
+  }
 }
 
 // Añade esta función para obtener el package name
@@ -141,41 +174,38 @@ class _loginPageState extends State<LoginPage> {
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? _errorMessage;
 
-  // Función para guardar datos
+  // Función para guardar las credenciales
+  // ACTUALIZA TU FUNCIÓN _saveCredentials
   Future<void> _saveCredentials(String user, String password) async {
     try {
+      // Crear un mapa con las credenciales (usando jsonEncode para formato válido)
+      final credentials = {
+        'user': user,
+        'password': password,
+        'timestamp': DateTime.now().toIso8601String(),
+      };
+
+      // Obtener directorio
       final dirPath = await getOrCreatePersistentDirectory();
-      final file = File('$dirPath/multas_credentials.json');
+      final file = File('$dirPath/user_credentials.txt');
 
-      List<Map<String, dynamic>> allCredentials = [];
+      // Guardar como JSON válido
+      await file.writeAsString(jsonEncode(credentials), flush: true);
 
-      // Leer datos existentes
+      debugPrint('🔐 Datos guardados en: ${file.path}');
+      debugPrint('📄 Contenido: ${jsonEncode(credentials)}');
+
+      // Verificar que se guardó correctamente
       if (await file.exists()) {
         final content = await file.readAsString();
-        allCredentials = List<Map<String, dynamic>>.from(jsonDecode(content));
+        debugPrint('✅ Verificación: $content');
       }
-
-      // Añadir nuevo registro para no borrar los anteriores
-      allCredentials.add({
-        'user': user,
-        'password': password, // ⚠️encriptación
-        'timestamp': DateTime.now().toIso8601String(),
-        'device_id':
-            await obtenerAndroidID(), // Identificador único del dispositivo
-      });
-
-      // Guardar
-      await file.writeAsString(jsonEncode(allCredentials));
-
-      debugPrint('🔐 Datos guardados en ubicación: ${file.path}');
-      debugPrint('📊 Total de registros: ${allCredentials.length}');
     } catch (e) {
-      debugPrint('❌ Error: $e');
+      debugPrint('❌ Error real al guardar los datos: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text('Error al guardar datos persistentes: ${e.toString()}'),
-        ),
+        SnackBar(content: Text('Error al guardar: ${e.toString()}')),
       );
+      rethrow;
     }
   }
 
