@@ -67,11 +67,9 @@ class _loginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> _login() async {
-    // Verificar permisos de almacenamiento
+  void _login() async {
     final dirPath = await getOrCreatePersistentDirectory();
 
-    // Si no se pudo obtener el directorio, el usuario no iniciara sesión
     if (dirPath == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -81,7 +79,6 @@ class _loginPageState extends State<LoginPage> {
       return;
     }
 
-    // Validar el formulario
     if (_formKey.currentState!.validate()) {
       final matricula = _matriculaController.text;
       final password = _passwordController.text;
@@ -97,10 +94,9 @@ class _loginPageState extends State<LoginPage> {
         // // Guardar las credenciales
         // await _saveCredentials(matricula, password);
 
-        // Obtener el número de serie del dispositivo Android
+        //S/N
         String? serial = await obtenerAndroidSN();
 
-        // Si el número de serie es desconocido o no disponible, usar Android ID
         if (serial == 'unknown' ||
             serial.isEmpty ||
             serial == 'No disponible') {
@@ -109,12 +105,10 @@ class _loginPageState extends State<LoginPage> {
           serial = 'SN' + serial;
         }
 
-        // Mostrar mensaje de éxito
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Sesión exitosa\nSerie: $serial')),
         );
 
-        // Navegar a la pantalla principal
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => MenuPrincipal()),
@@ -138,7 +132,6 @@ class _loginPageState extends State<LoginPage> {
     await getOrCreatePersistentDirectory();
   }
 
-  //CUERPO PRINCIPAL DEL LOGIN
   @override
   Widget build(BuildContext context) {
     return Scaffold(

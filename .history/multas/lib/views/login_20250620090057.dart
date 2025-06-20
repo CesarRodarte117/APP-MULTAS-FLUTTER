@@ -3,17 +3,166 @@ import 'package:flutter/material.dart';
 // VIEWS
 import 'package:multas/views/menu_principal.dart';
 
-// IMPORTS
-import 'package:multas/funciones_especiales/almacenamiento_permisos.dart';
-import 'package:multas/funciones_especiales/obtener_informacion_dispositivo.dart';
-
 // CONTROLLERS
 
+// ANDROID S/N --Android 9 (Pie)	API 28	2018
+import 'package:permission_handler/permission_handler.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+
 //GUARDAR INFO
+import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
 // Añade estos imports adicionales al inicio del archivo
+import 'package:flutter/services.dart';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
+
+//leer los datos de un archivo persistente
+Future<void> printAllFilesContent() async {
+  try {
+    final dirPath = await getOrCreatePersistentDirectory();
+    final directory = Directory(dirPath);
+    final files = await directory.list().toList();
+
+    for (var file in files) {
+      if (file is File) {
+        try {
+          final content = await file.readAsString();
+          print('\n📄 Archivo: ${file.path}');
+          print('-------------------------------------');
+          print(content);
+          print('-------------------------------------');
+        } catch (e) {
+          print('❌ Error al leer ${file.path}: $e');
+        }
+      }
+    }
+  } catch (e) {
+    print('❌ Error al listar archivos: $e');
+  }
+}
+
+// Obtiene el directorio persistente de la aplicación
+Future<String> getOrCreatePersistentDirectory(BuildContext context) async {
+  Directory baseDir;
+
+  if (Platform.isAndroid) {
+    baseDir = Directory('/storage/emulated/0/Documents/MultasData');
+
+    final androidInfo = await DeviceInfoPlugin().androidInfo;
+
+    // Android 11+ necesita manageExternalStorage
+    if (androidInfo.version.sdkInt >= 30) {
+      if (!await Permission.manageExternalStorage.isGranted) {
+        var status = await Permission.manageExternalStorage.request();
+
+        if (status.isDenied || status.isPermanentlyDenied) {
+          _showPermissionDialog(context);
+          return '';
+        }
+      }
+    } else {
+      if (!await Permission.storage.isGranted) {
+        var status = await Permission.storage.request();
+
+        if (status.isDenied || status.isPermanentlyDenied) {
+          _showPermissionDialog(context);
+          return '';
+        }
+      }
+    }
+  } else {
+    baseDir = await getApplicationDocumentsDirectory();
+  }
+
+  if (!await baseDir.exists()) {
+    await baseDir.create(recursive: true);
+    debugPrint('✅ Directorio creado en ubicación: ${baseDir.path}');
+  }
+
+  return baseDir.path;
+}
+
+// Muestra un diálogo para abrir configuración
+void _showPermissionDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    builder: (_) => AlertDialog(
+      title: Text('Permiso requerido'),
+      content: Text(
+        'Necesitamos acceso al almacenamiento para guardar archivos. '
+        'Por favor, habilítalo en la configuración de la aplicación.',
+      ),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.pop(context);
+          },
+          child: Text('Cancelar'),
+        ),
+        TextButton(
+          onPressed: () async {
+            Navigator.pop(context);
+            await openAppSettings(); // Abre ajustes del sistema
+          },
+          child: Text('Abrir configuración'),
+        ),
+      ],
+    ),
+  );
+}
+
+// Añade esta función para obtener el package name
+Future<String> _getPackageName() async {
+  try {
+    const channel = MethodChannel('flutter.native/helper');
+    return await channel.invokeMethod('getPackageName');
+  } catch (e) {
+    debugPrint('Error al obtener package name: $e');
+    return 'com.default.package';
+  }
+}
+
+Future<String?> readPersistentFile(String filename) async {
+  try {
+    final dirPath = await getOrCreatePersistentDirectory();
+    final file = File('$dirPath/$filename');
+    if (await file.exists()) {
+      return await file.readAsString();
+    }
+    return null;
+  } catch (e) {
+    print('❌ Error al leer archivo: $e');
+    return null;
+  }
+}
+
+Future<String> obtenerAndroidSN() async {
+  DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+  return androidInfo.serialNumber ?? 'No disponible';
+}
+
+Future<String> obtenerAndroidID() async {
+  String? androidId;
+  DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+  androidId =
+      'ID:' +
+      androidInfo.id +
+      '--MODELO:' +
+      androidInfo.model +
+      '--FABRICANTE:' +
+      androidInfo.brand +
+      '--ANDROID:' +
+      androidInfo.version.release +
+      '--NOMBRE:' +
+      androidInfo.name;
+  ;
+
+  return androidId ?? 'No disponible';
+}
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -23,6 +172,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _loginPageState extends State<LoginPage> {
+  int _selectedIndex = 0;
   bool _obscurePassword = true;
   final TextEditingController _matriculaController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -67,21 +217,7 @@ class _loginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> _login() async {
-    // Verificar permisos de almacenamiento
-    final dirPath = await getOrCreatePersistentDirectory();
-
-    // Si no se pudo obtener el directorio, el usuario no iniciara sesión
-    if (dirPath == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Para usar la app, debes aceptar los permisos'),
-        ),
-      );
-      return;
-    }
-
-    // Validar el formulario
+  void _login() async {
     if (_formKey.currentState!.validate()) {
       final matricula = _matriculaController.text;
       final password = _passwordController.text;
@@ -97,10 +233,9 @@ class _loginPageState extends State<LoginPage> {
         // // Guardar las credenciales
         // await _saveCredentials(matricula, password);
 
-        // Obtener el número de serie del dispositivo Android
+        //S/N
         String? serial = await obtenerAndroidSN();
 
-        // Si el número de serie es desconocido o no disponible, usar Android ID
         if (serial == 'unknown' ||
             serial.isEmpty ||
             serial == 'No disponible') {
@@ -109,12 +244,10 @@ class _loginPageState extends State<LoginPage> {
           serial = 'SN' + serial;
         }
 
-        // Mostrar mensaje de éxito
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Sesión exitosa\nSerie: $serial')),
         );
 
-        // Navegar a la pantalla principal
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => MenuPrincipal()),
@@ -127,18 +260,6 @@ class _loginPageState extends State<LoginPage> {
     }
   }
 
-  // PREGUNTAMOS QUE ACEPTA LOS PERMISOS
-  @override
-  void initState() {
-    super.initState();
-    _initDirectory();
-  }
-
-  void _initDirectory() async {
-    await getOrCreatePersistentDirectory();
-  }
-
-  //CUERPO PRINCIPAL DEL LOGIN
   @override
   Widget build(BuildContext context) {
     return Scaffold(

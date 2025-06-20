@@ -5,15 +5,49 @@ import 'package:multas/views/menu_principal.dart';
 
 // IMPORTS
 import 'package:multas/funciones_especiales/almacenamiento_permisos.dart';
-import 'package:multas/funciones_especiales/obtener_informacion_dispositivo.dart';
 
 // CONTROLLERS
 
+// ANDROID S/N --Android 9 (Pie)	API 28	2018
+import 'package:permission_handler/permission_handler.dart';
+import 'package:device_info_plus/device_info_plus.dart';
+
 //GUARDAR INFO
+import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 
 // Añade estos imports adicionales al inicio del archivo
+import 'package:flutter/services.dart';
 import 'dart:convert';
+import 'package:flutter/foundation.dart';
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
+Future<String> obtenerAndroidSN() async {
+  DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+  return androidInfo.serialNumber ?? 'No disponible';
+}
+
+Future<String> obtenerAndroidID() async {
+  String? androidId;
+  DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
+  AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
+  androidId =
+      'ID:' +
+      androidInfo.id +
+      '--MODELO:' +
+      androidInfo.model +
+      '--FABRICANTE:' +
+      androidInfo.brand +
+      '--ANDROID:' +
+      androidInfo.version.release +
+      '--NOMBRE:' +
+      androidInfo.name;
+  ;
+
+  return androidId ?? 'No disponible';
+}
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -23,6 +57,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _loginPageState extends State<LoginPage> {
+  int _selectedIndex = 0;
   bool _obscurePassword = true;
   final TextEditingController _matriculaController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
@@ -67,21 +102,7 @@ class _loginPageState extends State<LoginPage> {
     }
   }
 
-  Future<void> _login() async {
-    // Verificar permisos de almacenamiento
-    final dirPath = await getOrCreatePersistentDirectory();
-
-    // Si no se pudo obtener el directorio, el usuario no iniciara sesión
-    if (dirPath == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Para usar la app, debes aceptar los permisos'),
-        ),
-      );
-      return;
-    }
-
-    // Validar el formulario
+  void _login() async {
     if (_formKey.currentState!.validate()) {
       final matricula = _matriculaController.text;
       final password = _passwordController.text;
@@ -97,10 +118,9 @@ class _loginPageState extends State<LoginPage> {
         // // Guardar las credenciales
         // await _saveCredentials(matricula, password);
 
-        // Obtener el número de serie del dispositivo Android
+        //S/N
         String? serial = await obtenerAndroidSN();
 
-        // Si el número de serie es desconocido o no disponible, usar Android ID
         if (serial == 'unknown' ||
             serial.isEmpty ||
             serial == 'No disponible') {
@@ -109,12 +129,10 @@ class _loginPageState extends State<LoginPage> {
           serial = 'SN' + serial;
         }
 
-        // Mostrar mensaje de éxito
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Sesión exitosa\nSerie: $serial')),
         );
 
-        // Navegar a la pantalla principal
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => MenuPrincipal()),
@@ -127,18 +145,6 @@ class _loginPageState extends State<LoginPage> {
     }
   }
 
-  // PREGUNTAMOS QUE ACEPTA LOS PERMISOS
-  @override
-  void initState() {
-    super.initState();
-    _initDirectory();
-  }
-
-  void _initDirectory() async {
-    await getOrCreatePersistentDirectory();
-  }
-
-  //CUERPO PRINCIPAL DEL LOGIN
   @override
   Widget build(BuildContext context) {
     return Scaffold(
