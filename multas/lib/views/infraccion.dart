@@ -113,56 +113,60 @@ class _InfraccionState extends State<Infraccion> {
                   _buildStepContent(),
 
                   // Botones de navegación (actualizados con estilo vino)
+                  // Botones de navegación (actualizados según los requisitos)
                   Padding(
                     padding: const EdgeInsets.only(top: 20),
                     child: Row(
-                      // mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        if (_currentStep < 3)
-                          ElevatedButton(
-                            onPressed: _nextStep,
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(
-                                255,
-                                124,
-                                36,
-                                57,
+                        // Botón Atrás - aparece en todos los pasos excepto Infractor
+                        // y en Vehículo solo si apartado_menu es "1"
+                        if (_currentStep > 0 &&
+                            !(_currentStep == 1 && widget.apartado_menu != "1"))
+                          Padding(
+                            padding: const EdgeInsets.only(right: 20),
+                            child: ElevatedButton(
+                              onPressed: _prevStep,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: Colors.grey,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 32,
+                                  vertical: 16,
+                                ),
+                                textStyle: const TextStyle(fontSize: 20),
                               ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32,
-                                vertical: 16,
+                              child: const Text(
+                                "Atrás",
+                                style: TextStyle(color: Colors.white),
                               ),
-                              textStyle: const TextStyle(fontSize: 20),
-                            ),
-                            child: const Text(
-                              "Siguiente",
-                              style: TextStyle(color: Colors.white),
-                            ),
-                          ),
-                        if (_currentStep == 3)
-                          ElevatedButton(
-                            onPressed: () {
-                              // Lógica para enviar el formulario
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(
-                                255,
-                                124,
-                                36,
-                                57,
-                              ),
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 32,
-                                vertical: 16,
-                              ),
-                              textStyle: const TextStyle(fontSize: 20),
-                            ),
-                            child: const Text(
-                              "Enviar",
-                              style: TextStyle(color: Colors.white),
                             ),
                           ),
+
+                        // Botón principal (Siguiente/Procesar)
+                        ElevatedButton(
+                          onPressed: _currentStep == 3
+                              ? () {
+                                  // Lógica para procesar/enviar
+                                }
+                              : _nextStep,
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: const Color.fromARGB(
+                              255,
+                              124,
+                              36,
+                              57,
+                            ),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 32,
+                              vertical: 16,
+                            ),
+                            textStyle: const TextStyle(fontSize: 20),
+                          ),
+                          child: Text(
+                            _currentStep == 3 ? "Procesar" : "Siguiente",
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                        ),
                       ],
                     ),
                   ),
@@ -177,32 +181,44 @@ class _InfraccionState extends State<Infraccion> {
 
   Widget _buildStepIcon(int stepIndex, IconData icon, String label) {
     final bool isActive = stepIndex == _currentStep;
-    return Column(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            color: isActive
-                ? const Color.fromARGB(255, 124, 36, 57) // Color activo
-                : Colors.grey.shade300, // Color inactivo
-            shape: BoxShape.circle,
+    return InkWell(
+      onTap: () {
+        setState(() {
+          _currentStep = stepIndex;
+        });
+      },
+      splashColor: Colors.transparent, // Elimina el color del splash
+      highlightColor: Colors.transparent, // Elimina el color de resaltado
+      hoverColor: Colors
+          .transparent, // Elimina el color al pasar el mouse (en web/desktop)
+      focusColor: Colors.transparent, // Elimina el color cuando tiene foco
+      child: Column(
+        children: [
+          Container(
+            padding: const EdgeInsets.all(12),
+            decoration: BoxDecoration(
+              color: isActive
+                  ? const Color.fromARGB(255, 124, 36, 57) // Color activo
+                  : Colors.grey.shade300, // Color inactivo
+              shape: BoxShape.circle,
+            ),
+            child: Icon(
+              icon,
+              size: 30,
+              color: isActive ? Colors.white : Colors.grey.shade800,
+            ),
           ),
-          child: Icon(
-            icon,
-            size: 30,
-            color: isActive ? Colors.white : Colors.grey.shade800,
+          const SizedBox(height: 8),
+          Text(
+            label,
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              color: isActive ? Colors.black : Colors.grey,
+            ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 12,
-            fontWeight: FontWeight.bold,
-            color: isActive ? Colors.black : Colors.grey,
-          ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 
