@@ -2,6 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:multas/models/db.dart';
 import 'package:multas/models/multas.dart';
+import 'package:image_picker/image_picker.dart';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 
 class Infraccion extends StatefulWidget {
   const Infraccion({super.key, this.apartado_menu});
@@ -18,6 +22,97 @@ class _InfraccionState extends State<Infraccion> {
   bool _loadingCalles = false;
   final TextEditingController _calleController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
+  String? _fotoEvidencia;
+  final ImagePicker _picker = ImagePicker();
+
+  // Método para guardar foto localmente
+  Future<String> _guardarFotoLocalmente(String rutaTemporal) async {
+    try {
+      // Obtener el directorio de documentos de la app
+      final directory = await getApplicationDocumentsDirectory();
+
+      // Obtener fecha y hora actual formateadas
+      final ahora = DateTime.now();
+      final fechaHora =
+          '${ahora.year}${_dosDigitos(ahora.month)}${_dosDigitos(ahora.day)}_'
+          '${_dosDigitos(ahora.hour)}${_dosDigitos(ahora.minute)}${_dosDigitos(ahora.second)}';
+
+      // Crear nombre de archivo con formato: evidencia_YYYYMMDD_HHMMSS.jpg
+      final nombreArchivo = 'evidencia_$fechaHora.jpg';
+
+      // Ruta final donde se guardará la foto
+      final rutaFinal = path.join(directory.path, nombreArchivo);
+
+      // Copiar el archivo temporal a la ubicación permanente
+      await File(rutaTemporal).copy(rutaFinal);
+
+      print('FOTO GUARDADA EN: $rutaFinal');
+      // Ejemplo: /data/user/0/com.example.multas/app_flutter/evidencia_20240622_143015.jpg
+
+      return rutaFinal;
+    } catch (e) {
+      print('Error al guardar foto: $e');
+      rethrow;
+    }
+  }
+
+  // Función auxiliar para asegurar 2 dígitos (añade 0 si es necesario)
+  String _dosDigitos(int numero) {
+    return numero.toString().padLeft(2, '0');
+  }
+
+  // Método para tomar foto (solo permite 1)
+  Future<void> _tomarFoto() async {
+    try {
+      final XFile? foto = await _picker.pickImage(
+        source: ImageSource.camera,
+        maxWidth: 1200,
+        maxHeight: 1200,
+        imageQuality: 80,
+      );
+
+      if (foto != null) {
+        // Mostrar un indicador de carga mientras se guarda
+        showDialog(
+          context: context,
+          barrierDismissible: false,
+          builder: (context) =>
+              const Center(child: CircularProgressIndicator()),
+        );
+
+        try {
+          final String nuevaRuta = await _guardarFotoLocalmente(foto.path);
+
+          if (mounted) {
+            Navigator.of(context).pop(); // Cerrar el diálogo de carga
+            setState(() {
+              _fotoEvidencia = nuevaRuta;
+            });
+          }
+        } catch (e) {
+          if (mounted) {
+            Navigator.of(context).pop(); // Cerrar el diálogo de carga
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Error al guardar foto: ${e.toString()}')),
+            );
+          }
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al tomar foto: ${e.toString()}')),
+        );
+      }
+    }
+  }
+
+  // Método para eliminar la foto actual
+  void _eliminarFoto() {
+    setState(() {
+      _fotoEvidencia = null;
+    });
+  }
 
   @override
   void initState() {
@@ -112,15 +207,12 @@ class _InfraccionState extends State<Infraccion> {
                   // Contenido del formulario según el paso actual
                   _buildStepContent(),
 
-                  // Botones de navegación (actualizados con estilo vino)
-                  // Botones de navegación (actualizados según los requisitos)
+                  // Botones de navegación
                   Padding(
                     padding: const EdgeInsets.only(top: 20),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        // Botón Atrás - aparece en todos los pasos excepto Infractor
-                        // y en Vehículo solo si apartado_menu es "1"
                         if (_currentStep > 0 &&
                             !(_currentStep == 1 && widget.apartado_menu != "1"))
                           Padding(
@@ -142,11 +234,34 @@ class _InfraccionState extends State<Infraccion> {
                             ),
                           ),
 
-                        // Botón principal (Siguiente/Procesar)
                         ElevatedButton(
                           onPressed: _currentStep == 3
-                              ? () {
-                                  // Lógica para procesar/enviar
+                              ? () async {
+                                  if (_formKey.currentState!.validate()) {
+                                    if (_fotoEvidencia == null) {
+                                      ScaffoldMessenger.of(
+                                        context,
+                                      ).showSnackBar(
+                                        const SnackBar(
+                                          content: Text(
+                                            'Debes tomar una foto de evidencia',
+                                          ),
+                                        ),
+                                      );
+                                      return;
+                                    }
+
+                                    // Aquí iría la lógica para guardar la infracción
+                                    ScaffoldMessenger.of(context).showSnackBar(
+                                      const SnackBar(
+                                        content: Text(
+                                          'Infracción registrada con éxito',
+                                        ),
+                                      ),
+                                    );
+
+                                    if (mounted) Navigator.of(context).pop();
+                                  }
                                 }
                               : _nextStep,
                           style: ElevatedButton.styleFrom(
@@ -187,19 +302,18 @@ class _InfraccionState extends State<Infraccion> {
           _currentStep = stepIndex;
         });
       },
-      splashColor: Colors.transparent, // Elimina el color del splash
-      highlightColor: Colors.transparent, // Elimina el color de resaltado
-      hoverColor: Colors
-          .transparent, // Elimina el color al pasar el mouse (en web/desktop)
-      focusColor: Colors.transparent, // Elimina el color cuando tiene foco
+      splashColor: Colors.transparent,
+      highlightColor: Colors.transparent,
+      hoverColor: Colors.transparent,
+      focusColor: Colors.transparent,
       child: Column(
         children: [
           Container(
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               color: isActive
-                  ? const Color.fromARGB(255, 124, 36, 57) // Color activo
-                  : Colors.grey.shade300, // Color inactivo
+                  ? const Color.fromARGB(255, 124, 36, 57)
+                  : Colors.grey.shade300,
               shape: BoxShape.circle,
             ),
             child: Icon(
@@ -240,7 +354,6 @@ class _InfraccionState extends State<Infraccion> {
   Widget _buildInfractorForm() {
     return Column(
       children: [
-        // Fila 1: Licencia y Estado
         Row(
           children: [
             Expanded(
@@ -266,7 +379,6 @@ class _InfraccionState extends State<Infraccion> {
           ],
         ),
 
-        // Nombre completo
         TextFormField(
           decoration: const InputDecoration(labelText: "Nombre(s)"),
           validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
@@ -279,7 +391,6 @@ class _InfraccionState extends State<Infraccion> {
           decoration: const InputDecoration(labelText: "Apellido materno"),
         ),
 
-        // Género y Edad
         Row(
           children: [
             Expanded(
@@ -303,67 +414,6 @@ class _InfraccionState extends State<Infraccion> {
           ],
         ),
 
-        // // Campo de calle con autocompletado
-        // _loadingCalles
-        //     ? const CircularProgressIndicator()
-        //     : FormField<String>(
-        //         validator: (value) =>
-        //             value?.isEmpty ?? true ? 'Campo obligatorio' : null,
-        //         builder: (formFieldState) {
-        //           return Column(
-        //             crossAxisAlignment: CrossAxisAlignment.start,
-        //             children: [
-        //               TypeAheadField<Calles>(
-        //                 textFieldConfiguration: TextFieldConfiguration(
-        //                   controller: _calleController,
-        //                   decoration: InputDecoration(
-        //                     labelText: 'Calle',
-        //                     hintText: 'Escribe para buscar',
-        //                     border: const OutlineInputBorder(),
-        //                     errorText: formFieldState.errorText,
-        //                   ),
-        //                   onChanged: (value) {
-        //                     formFieldState.didChange(value);
-        //                   },
-        //                 ),
-        //                 suggestionsCallback: (pattern) => _calles
-        //                     .where(
-        //                       (calle) => calle.nombre.toLowerCase().contains(
-        //                         pattern.toLowerCase(),
-        //                       ),
-        //                     )
-        //                     .toList(),
-        //                 itemBuilder: (context, calle) => ListTile(
-        //                   title: Text(calle.nombre),
-        //                   subtitle: calle.clave.isNotEmpty
-        //                       ? Text('Clave: ${calle.clave}')
-        //                       : null,
-        //                 ),
-        //                 onSuggestionSelected: (calle) {
-        //                   _calleController.text = calle.nombre;
-        //                   formFieldState.didChange(calle.nombre);
-        //                 },
-        //                 noItemsFoundBuilder: (context) => const Padding(
-        //                   padding: EdgeInsets.all(8.0),
-        //                   child: Text('No se encontraron calles'),
-        //                 ),
-        //               ),
-        //               if (formFieldState.hasError)
-        //                 Padding(
-        //                   padding: const EdgeInsets.only(top: 8.0),
-        //                   child: Text(
-        //                     formFieldState.errorText!,
-        //                     style: TextStyle(
-        //                       color: Theme.of(context).colorScheme.error,
-        //                       fontSize: 12,
-        //                     ),
-        //                   ),
-        //                 ),
-        //             ],
-        //           );
-        //         },
-        //       ),
-        // Números exterior e interior
         Row(
           children: [
             Expanded(
@@ -386,7 +436,6 @@ class _InfraccionState extends State<Infraccion> {
           ],
         ),
 
-        // Colonia y CP
         Row(
           children: [
             Expanded(
@@ -410,7 +459,6 @@ class _InfraccionState extends State<Infraccion> {
           ],
         ),
 
-        // Teléfono
         TextFormField(
           decoration: const InputDecoration(labelText: "Teléfono"),
           keyboardType: TextInputType.phone,
@@ -420,7 +468,6 @@ class _InfraccionState extends State<Infraccion> {
     );
   }
 
-  // Ejemplo de formulario para Vehículo
   Widget _buildVehiculoForm() {
     return Column(
       children: [
@@ -437,7 +484,6 @@ class _InfraccionState extends State<Infraccion> {
     );
   }
 
-  // Ejemplo de formulario para Infracción
   Widget _buildInfraccionForm() {
     return Column(
       children: [
@@ -450,17 +496,60 @@ class _InfraccionState extends State<Infraccion> {
     );
   }
 
-  // Ejemplo de formulario para Evidencia
   Widget _buildEvidenciaForm() {
     return Column(
       children: [
-        const Text("Subir fotos de evidencia"),
-        IconButton(
-          icon: const Icon(Icons.camera_alt, size: 50),
-          onPressed: () {
-            // Lógica para tomar fotos
-          },
+        const Text(
+          "Foto de evidencia",
+          style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
         ),
+        const SizedBox(height: 20),
+
+        if (_fotoEvidencia != null)
+          Column(
+            children: [
+              Container(
+                width: 300,
+                height: 300,
+                decoration: BoxDecoration(
+                  border: Border.all(color: Colors.grey),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Image.file(File(_fotoEvidencia!), fit: BoxFit.cover),
+              ),
+              const SizedBox(height: 10),
+              ElevatedButton(
+                onPressed: _eliminarFoto,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color.fromARGB(255, 124, 36, 57),
+                ),
+                child: const Text(
+                  "Eliminar foto",
+                  style: TextStyle(color: Colors.white, fontSize: 16),
+                ),
+              ),
+            ],
+          )
+        else
+          ElevatedButton.icon(
+            icon: const Icon(Icons.camera_alt, size: 24, color: Colors.white),
+            label: const Text(
+              "Tomar foto de evidencia",
+              style: TextStyle(fontSize: 16, color: Colors.white),
+            ),
+            onPressed: _tomarFoto,
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color.fromARGB(255, 124, 36, 57),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+            ),
+          ),
+
+        const SizedBox(height: 20),
+        // if (_fotoEvidencia == null)
+        //   const Text(
+        //     "Debes tomar una foto como evidencia",
+        //     style: TextStyle(color: Colors.red, fontSize: 14),
+        //   ),
       ],
     );
   }

@@ -6,6 +6,7 @@ import 'package:multas/views/menu_principal.dart';
 // IMPORTS
 import 'package:multas/funciones_especiales/almacenamiento_permisos.dart';
 import 'package:multas/funciones_especiales/obtener_informacion_dispositivo.dart';
+import 'package:multas/funciones_especiales/camara_permisos.dart';
 
 // CONTROLLERS
 
@@ -32,7 +33,7 @@ class _loginPageState extends State<LoginPage> {
   // Función para guardar datos
   Future<void> _saveCredentials(String user, String password) async {
     try {
-      final dirPath = await getOrCreatePersistentDirectory();
+      final dirPath = await getOrCreatePersistentDirectory(context);
       final file = File('$dirPath/multas_credentials.json');
 
       List<Map<String, dynamic>> allCredentials = [];
@@ -69,15 +70,28 @@ class _loginPageState extends State<LoginPage> {
 
   Future<void> _login() async {
     // Verificar permisos de almacenamiento
-    final dirPath = await getOrCreatePersistentDirectory();
+    final dirPath = await getOrCreatePersistentDirectory(context);
 
     // Si no se pudo obtener el directorio, el usuario no iniciara sesión
     if (dirPath == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text('Para usar la app, debes aceptar los permisos'),
+          content: Text('Debes aceptar los permisos de almacenamiento'),
         ),
       );
+      return;
+    }
+
+    final camaraTienePermisos = await PermisosHandler().verificarPermisosCamara(
+      context,
+    );
+
+    if (!camaraTienePermisos) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Debes aceptar los permisos de cámara')),
+        );
+      }
       return;
     }
 
@@ -88,7 +102,7 @@ class _loginPageState extends State<LoginPage> {
 
       // Guardar las credenciales
       await _saveCredentials(matricula, password);
-      await printAllFilesContent();
+      await printAllFilesContent(context);
       if (matricula == '666' && password == '666') {
         setState(() {
           _errorMessage = null;
@@ -135,7 +149,8 @@ class _loginPageState extends State<LoginPage> {
   }
 
   void _initDirectory() async {
-    await getOrCreatePersistentDirectory();
+    await getOrCreatePersistentDirectory(context);
+    await PermisosHandler().verificarPermisosCamara(context);
   }
 
   //CUERPO PRINCIPAL DEL LOGIN
