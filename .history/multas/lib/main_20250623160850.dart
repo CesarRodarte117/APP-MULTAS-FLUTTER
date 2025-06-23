@@ -11,9 +11,12 @@ import 'package:multas/views/menu_principal.dart';
 // Servicios
 import 'package:multas/funciones_especiales/verificar_session.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized(); // Importante para SharedPreferences
   runApp(const MyApp());
 }
+
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -21,20 +24,24 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      title: 'Multas App',
+      theme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+      ),
+      navigatorKey: navigatorKey,
       home: FutureBuilder<bool>(
         future: AuthService.isLoggedIn(),
         builder: (context, snapshot) {
-          // Mientras verifica
+          // Mientras se carga
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Center(child: CircularProgressIndicator());
+            return const Scaffold(
+              body: Center(child: CircularProgressIndicator()),
+            );
           }
 
-          // Decide a dónde ir
-          if (snapshot.data == true) {
-            return MenuPrincipal(); // Si ya inició sesión
-          } else {
-            return LoginPage(); // Si no ha iniciado sesión
-          }
+          // Cuando ya tenemos respuesta
+          final isLoggedIn = snapshot.data ?? false;
+          return isLoggedIn ? MenuPrincipal() : const LoginPage();
         },
       ),
     );

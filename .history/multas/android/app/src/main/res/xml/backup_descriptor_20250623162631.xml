@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<full-backup-content>
+    <!-- Excluir SharedPreferences -->
+    <exclude domain="sharedpref" path="."/>
+    <!-- Opcional: Excluir flutter_secure_storage -->
+    <exclude domain="sharedpref" path="FlutterSecureStorage"/>
+</full-backup-content>

@@ -111,7 +111,7 @@ class _loginPageState extends State<LoginPage> {
           _errorMessage = null;
         });
 
-        AuthService.saveSession(password, matricula);
+        saveSession(password, matricula);
 
         // // Guardar las credenciales
         // await _saveCredentials(matricula, password);

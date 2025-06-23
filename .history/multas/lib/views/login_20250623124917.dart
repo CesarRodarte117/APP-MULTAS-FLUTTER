@@ -8,9 +8,6 @@ import 'package:multas/funciones_especiales/almacenamiento_permisos.dart';
 import 'package:multas/funciones_especiales/obtener_informacion_dispositivo.dart';
 import 'package:multas/funciones_especiales/camara_permisos.dart';
 
-// funciones especiales
-import 'package:multas/funciones_especiales/verificar_session.dart';
-
 // CONTROLLERS
 
 //GUARDAR INFO
@@ -111,8 +108,6 @@ class _loginPageState extends State<LoginPage> {
           _errorMessage = null;
         });
 
-        AuthService.saveSession(password, matricula);
-
         // // Guardar las credenciales
         // await _saveCredentials(matricula, password);
 
@@ -127,6 +122,11 @@ class _loginPageState extends State<LoginPage> {
         } else {
           serial = 'SN' + serial;
         }
+
+        final prefs = await SharedPreferences.getInstance();
+        final savedMatricula = prefs.getString('matricula');
+        final savedPassword = prefs.getString('password');
+        final sessionActive = true;
 
         // Mostrar mensaje de éxito
         ScaffoldMessenger.of(context).showSnackBar(

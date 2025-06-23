@@ -8,9 +8,6 @@ import 'package:multas/funciones_especiales/almacenamiento_permisos.dart';
 import 'package:multas/funciones_especiales/obtener_informacion_dispositivo.dart';
 import 'package:multas/funciones_especiales/camara_permisos.dart';
 
-// funciones especiales
-import 'package:multas/funciones_especiales/verificar_session.dart';
-
 // CONTROLLERS
 
 //GUARDAR INFO
@@ -111,7 +108,7 @@ class _loginPageState extends State<LoginPage> {
           _errorMessage = null;
         });
 
-        AuthService.saveSession(password, matricula);
+        saveSession(password, matricula);
 
         // // Guardar las credenciales
         // await _saveCredentials(matricula, password);

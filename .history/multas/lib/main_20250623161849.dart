@@ -31,9 +31,9 @@ class MyApp extends StatelessWidget {
 
           // Decide a dónde ir
           if (snapshot.data == true) {
-            return MenuPrincipal(); // Si ya inició sesión
+            return const MenuPrincipal(); // Si ya inició sesión
           } else {
-            return LoginPage(); // Si no ha iniciado sesión
+            return const LoginPage(); // Si no ha iniciado sesión
           }
         },
       ),

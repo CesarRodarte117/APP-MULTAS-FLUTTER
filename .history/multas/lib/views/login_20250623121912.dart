@@ -7,9 +7,7 @@ import 'package:multas/views/menu_principal.dart';
 import 'package:multas/funciones_especiales/almacenamiento_permisos.dart';
 import 'package:multas/funciones_especiales/obtener_informacion_dispositivo.dart';
 import 'package:multas/funciones_especiales/camara_permisos.dart';
-
-// funciones especiales
-import 'package:multas/funciones_especiales/verificar_session.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 // CONTROLLERS
 
@@ -32,6 +30,39 @@ class _loginPageState extends State<LoginPage> {
   final TextEditingController _passwordController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? _errorMessage;
+  // Añade estas variables nuevas
+  bool _isLoading = false;
+  bool _autoLoginAttempted = false;
+
+  // Función para intentar auto-login
+  Future<void> _tryAutoLogin() async {
+    if (_autoLoginAttempted) return;
+    _autoLoginAttempted = true;
+
+    final prefs = await SharedPreferences.getInstance();
+    final savedMatricula = prefs.getString('matricula');
+    final savedPassword = prefs.getString('password');
+
+    if (savedMatricula != null && savedPassword != null) {
+      setState(() {
+        _isLoading = true;
+      });
+
+      // Simulamos un pequeño delay para que se vea mejor la UI
+      await Future.delayed(const Duration(milliseconds: 500));
+
+      // Rellenamos los campos
+      _matriculaController.text = savedMatricula;
+      _passwordController.text = savedPassword;
+
+      // Intentamos el login automático
+      await _login();
+
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
 
   // Función para guardar datos
   Future<void> _saveCredentials(String user, String password) async {
@@ -111,8 +142,6 @@ class _loginPageState extends State<LoginPage> {
           _errorMessage = null;
         });
 
-        AuthService.saveSession(password, matricula);
-
         // // Guardar las credenciales
         // await _saveCredentials(matricula, password);
 
@@ -127,6 +156,15 @@ class _loginPageState extends State<LoginPage> {
         } else {
           serial = 'SN' + serial;
         }
+
+        setState(() {
+          _isLoading = true;
+        });
+
+        // Guardar las credenciales en SharedPreferences
+        final prefs = await SharedPreferences.getInstance();
+        await prefs.setString('matricula', matricula);
+        await prefs.setString('password', password);
 
         // Mostrar mensaje de éxito
         ScaffoldMessenger.of(context).showSnackBar(
@@ -150,6 +188,7 @@ class _loginPageState extends State<LoginPage> {
   @override
   void initState() {
     super.initState();
+    _tryAutoLogin();
     _initDirectory();
   }
 
