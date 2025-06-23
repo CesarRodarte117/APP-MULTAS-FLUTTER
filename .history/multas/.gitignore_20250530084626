@@ -33,12 +33,6 @@ migrate_working_dir/
 .pub/
 /build/
 
-
-# VS Code History
-.history/
-*.history
-
-
 # Symbolication related
 app.*.symbols
 

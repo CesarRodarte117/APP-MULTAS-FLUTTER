@@ -28,7 +28,7 @@ class MyApp extends StatelessWidget {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(
               child: CircularProgressIndicator(
-                valueColor: AlwaysStoppedAnimation<Color>(
+                style: CircularProgressIndicator.styleFrom(
                   const Color.fromARGB(255, 124, 36, 57),
                 ),
               ),
