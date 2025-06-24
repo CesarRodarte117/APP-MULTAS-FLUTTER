@@ -4,6 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:multas/views/login.dart';
 import 'package:multas/views/infraccion.dart';
 
+//funciones_especiales
+import 'package:multas/funciones_especiales/verificar_session.dart';
+
 class MenuPrincipal extends StatefulWidget {
   MenuPrincipal({Key? key}) : super(key: key);
 
@@ -185,11 +188,25 @@ class _MenuPrincipalState extends State<MenuPrincipal> {
                     padding: EdgeInsets.symmetric(vertical: 16),
                   ),
                   onPressed: () {
-                    Navigator.pop(context); // Cierra el drawer
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(builder: (context) => LoginPage()),
-                    );
+                    // Lógica para cerrar sesión
+                    AuthService.logout()
+                        .then((_) {
+                          // Redirigir al login después de cerrar sesión
+                          Navigator.pushReplacement(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => LoginPage(),
+                            ),
+                          );
+                        })
+                        .catchError((error) {
+                          // Manejo de errores al cerrar sesión
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text('Error al cerrar sesión: $error'),
+                            ),
+                          );
+                        });
                   },
                   child: Text(
                     'Cerrar Sesión',
