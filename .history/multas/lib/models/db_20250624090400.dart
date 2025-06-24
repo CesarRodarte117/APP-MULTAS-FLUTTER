@@ -1,5 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:postgres/postgres.dart';
 import 'dart:async';
 import 'multas.dart';
 export 'db.dart';
@@ -846,44 +847,21 @@ class DatabaseHelper {
     });
   }
 
-  // Función para insertar CALLES
-  // Insertar una calle
-  Future<int> insertCalle(Calle calle) async {
-    final db = await database;
-    return await db.insert('calles', calle.toMap());
-  }
-
-  // Obtener todas las calles
-  Future<List<Calle>> getCalles() async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('calles');
-    return List.generate(maps.length, (i) => Calle.fromMap(maps[i]));
-  }
-
-  Future<List<Calle>> buscarCalles(String query) async {
-    final db = await database;
-    final results = await db.query(
+  // Función para insertar
+  Future<void> insertCalle(Calles calle) async {
+    final Database db = await database;
+    await db.insert(
       'calles',
-      where: 'nombre LIKE ?',
-      whereArgs: ['%$query%'],
-      limit: 10, // Limitar resultados para mejor performance
+      calle.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
-    return results.map((e) => Calle.fromJson(e)).toList();
   }
 
-  // Eliminar todas las calles
-  Future<int> deleteAllCalles() async {
+  // Función para obtener todas las calles
+  Future<List<Calles>> getLocalCalles() async {
     final db = await database;
-    return await db.delete('calles');
-  }
-
-  // Contar calles
-  Future<int> countCalles() async {
-    final db = await database;
-    return Sqflite.firstIntValue(
-          await db.rawQuery('SELECT COUNT(*) FROM calles'),
-        ) ??
-        0;
+    final maps = await db.query('calles');
+    return maps.map((map) => Calles.fromMap(map)).toList();
   }
   //TEMRINA CALLES NUEVO
 

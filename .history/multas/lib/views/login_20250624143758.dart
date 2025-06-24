@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:multas/models/db.dart';
 
 // VIEWS
 import 'package:multas/views/menu_principal.dart';
@@ -11,9 +10,6 @@ import 'package:multas/funciones_especiales/camara_permisos.dart';
 
 // funciones especiales
 import 'package:multas/funciones_especiales/verificar_session.dart';
-
-//catalogos
-import 'package:multas/catalogos/descargar_catalogos.dart';
 
 // CONTROLLERS
 
@@ -133,7 +129,7 @@ class _loginPageState extends State<LoginPage> {
             _loadingMessage = 'Verificando catálogos...';
           });
 
-          final dbHelper = DatabaseHelper();
+          final dbHelper = DatabaseHelper.instance;
           final catalogoService = CatalogoService(dbHelper: dbHelper);
 
           final count = await dbHelper.countCalles();

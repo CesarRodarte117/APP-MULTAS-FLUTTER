@@ -860,17 +860,6 @@ class DatabaseHelper {
     return List.generate(maps.length, (i) => Calle.fromMap(maps[i]));
   }
 
-  Future<List<Calle>> buscarCalles(String query) async {
-    final db = await database;
-    final results = await db.query(
-      'calles',
-      where: 'nombre LIKE ?',
-      whereArgs: ['%$query%'],
-      limit: 10, // Limitar resultados para mejor performance
-    );
-    return results.map((e) => Calle.fromJson(e)).toList();
-  }
-
   // Eliminar todas las calles
   Future<int> deleteAllCalles() async {
     final db = await database;

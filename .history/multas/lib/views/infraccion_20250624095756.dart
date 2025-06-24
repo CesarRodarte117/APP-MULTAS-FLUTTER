@@ -24,7 +24,6 @@ class Infraccion extends StatefulWidget {
 class _InfraccionState extends State<Infraccion> {
   int _currentStep = 0; // 0=Infractor, 1=Vehículo, 2=Infracción, 3=Evidencia
   final DatabaseHelper _dbHelper = DatabaseHelper();
-  Calle? _calleSeleccionada; // Variable para almacenar la calle seleccionada
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? _fotoEvidencia;
   final ImagePicker _picker = ImagePicker();
@@ -322,8 +321,7 @@ class _InfraccionState extends State<Infraccion> {
   }
 
   Widget _buildInfractorForm() {
-    final dbHelper = DatabaseHelper();
-
+    final catalogoService = CatalogoService(dbHelper: DatabaseHelper());
     return Column(
       children: [
         Row(
@@ -386,16 +384,10 @@ class _InfraccionState extends State<Infraccion> {
           ],
         ),
 
-        const SizedBox(width: 10),
-        CalleAutocomplete(
-          dbHelper: dbHelper,
-          onCalleSelected: (calle) {
-            setState(() {
-              _calleSeleccionada = calle;
-            });
-          },
-          labelText: "Calle",
-          initialValue: _calleSeleccionada,
+        Row(
+          children: [
+            CalleDropdown(catalogoService: catalogoService, labelText: "Calle"),
+          ],
         ),
 
         Row(

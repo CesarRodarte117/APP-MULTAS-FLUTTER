@@ -10,9 +10,6 @@ import 'package:path/path.dart' as path;
 //catalogos
 import 'package:multas/catalogos/descargar_catalogos.dart';
 
-// Widgets
-import 'package:multas/widgets/calles_widget.dart';
-
 class Infraccion extends StatefulWidget {
   const Infraccion({super.key, this.apartado_menu});
   final String? apartado_menu;
@@ -24,7 +21,7 @@ class Infraccion extends StatefulWidget {
 class _InfraccionState extends State<Infraccion> {
   int _currentStep = 0; // 0=Infractor, 1=Vehículo, 2=Infracción, 3=Evidencia
   final DatabaseHelper _dbHelper = DatabaseHelper();
-  Calle? _calleSeleccionada; // Variable para almacenar la calle seleccionada
+  final TextEditingController _calleController = TextEditingController();
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? _fotoEvidencia;
   final ImagePicker _picker = ImagePicker();
@@ -124,6 +121,12 @@ class _InfraccionState extends State<Infraccion> {
     if (widget.apartado_menu == "2") {
       _currentStep = 1;
     }
+  }
+
+  @override
+  void dispose() {
+    _calleController.dispose();
+    super.dispose();
   }
 
   void _nextStep() {
@@ -322,8 +325,7 @@ class _InfraccionState extends State<Infraccion> {
   }
 
   Widget _buildInfractorForm() {
-    final dbHelper = DatabaseHelper();
-
+    final catalogoService = CatalogoService(dbHelper: DatabaseHelper());
     return Column(
       children: [
         Row(
@@ -384,18 +386,6 @@ class _InfraccionState extends State<Infraccion> {
               ),
             ),
           ],
-        ),
-
-        const SizedBox(width: 10),
-        CalleAutocomplete(
-          dbHelper: dbHelper,
-          onCalleSelected: (calle) {
-            setState(() {
-              _calleSeleccionada = calle;
-            });
-          },
-          labelText: "Calle",
-          initialValue: _calleSeleccionada,
         ),
 
         Row(

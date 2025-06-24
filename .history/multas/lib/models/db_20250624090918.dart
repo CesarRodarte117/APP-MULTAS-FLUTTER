@@ -1,5 +1,6 @@
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
+import 'package:postgres/postgres.dart';
 import 'dart:async';
 import 'multas.dart';
 export 'db.dart';
@@ -846,7 +847,7 @@ class DatabaseHelper {
     });
   }
 
-  // Función para insertar CALLES
+  // Función para insertar
   // Insertar una calle
   Future<int> insertCalle(Calle calle) async {
     final db = await database;
@@ -858,17 +859,6 @@ class DatabaseHelper {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('calles');
     return List.generate(maps.length, (i) => Calle.fromMap(maps[i]));
-  }
-
-  Future<List<Calle>> buscarCalles(String query) async {
-    final db = await database;
-    final results = await db.query(
-      'calles',
-      where: 'nombre LIKE ?',
-      whereArgs: ['%$query%'],
-      limit: 10, // Limitar resultados para mejor performance
-    );
-    return results.map((e) => Calle.fromJson(e)).toList();
   }
 
   // Eliminar todas las calles

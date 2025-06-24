@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:multas/models/db.dart';
 
 // VIEWS
 import 'package:multas/views/menu_principal.dart';
@@ -133,7 +132,7 @@ class _loginPageState extends State<LoginPage> {
             _loadingMessage = 'Verificando catálogos...';
           });
 
-          final dbHelper = DatabaseHelper();
+          final dbHelper = DatabaseHelper.instance;
           final catalogoService = CatalogoService(dbHelper: dbHelper);
 
           final count = await dbHelper.countCalles();

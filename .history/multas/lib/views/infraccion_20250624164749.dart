@@ -387,15 +387,12 @@ class _InfraccionState extends State<Infraccion> {
         ),
 
         const SizedBox(width: 10),
-        CalleAutocomplete(
-          dbHelper: dbHelper,
-          onCalleSelected: (calle) {
-            setState(() {
-              _calleSeleccionada = calle;
-            });
-          },
-          labelText: "Calle",
-          initialValue: _calleSeleccionada,
+        Expanded(
+          flex: 3,
+          child: TextFormField(
+            decoration: const InputDecoration(labelText: "Estado de origen"),
+            validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
+          ),
         ),
 
         Row(

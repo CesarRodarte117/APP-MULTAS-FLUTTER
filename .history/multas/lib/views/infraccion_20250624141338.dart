@@ -386,16 +386,16 @@ class _InfraccionState extends State<Infraccion> {
           ],
         ),
 
-        const SizedBox(width: 10),
-        CalleAutocomplete(
-          dbHelper: dbHelper,
-          onCalleSelected: (calle) {
+        CalleDropdown(
+          dbHelper: dbHelper, // Pasamos solo el helper de DB
+          labelText: "Calle",
+          onChanged: (calleSeleccionada) {
+            // Guarda la calle seleccionada en tu estado
             setState(() {
-              _calleSeleccionada = calle;
+              _calleSeleccionada = calleSeleccionada;
             });
           },
-          labelText: "Calle",
-          initialValue: _calleSeleccionada,
+          value: _calleSeleccionada, // Valor preseleccionado (opcional)
         ),
 
         Row(

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:multas/models/db.dart';
 
 // VIEWS
 import 'package:multas/views/menu_principal.dart';
@@ -11,9 +10,6 @@ import 'package:multas/funciones_especiales/camara_permisos.dart';
 
 // funciones especiales
 import 'package:multas/funciones_especiales/verificar_session.dart';
-
-//catalogos
-import 'package:multas/catalogos/descargar_catalogos.dart';
 
 // CONTROLLERS
 
@@ -105,91 +101,49 @@ class _loginPageState extends State<LoginPage> {
     }
 
     // Validar el formulario
-    // Validar el formulario
     if (_formKey.currentState!.validate()) {
       final matricula = _matriculaController.text;
       final password = _passwordController.text;
 
-      setState(() {
-        _isLoading = true;
-        _loadingMessage = 'Verificando credenciales...';
-      });
+      // Guardar las credenciales
+      await _saveCredentials(matricula, password);
+      await printAllFilesContent(context);
+      if (matricula == '666' && password == '666') {
+        setState(() {
+          _errorMessage = null;
+        });
 
-      try {
-        if (matricula == '666' && password == '666') {
-          setState(() {
-            _errorMessage = null;
-            _loadingMessage = 'Validando sesión...';
-          });
+        AuthService.saveSession(password, matricula);
 
-          // Guardar las credenciales
-          await _saveCredentials(matricula, password);
-          await printAllFilesContent(context);
+        // // Guardar las credenciales
+        // await _saveCredentials(matricula, password);
 
-          AuthService.saveSession(password, matricula);
+        // Obtener el número de serie del dispositivo Android
+        String? serial = await obtenerAndroidSN();
 
-          // Verificar si necesitamos descargar catálogos
-          setState(() {
-            _loadingMessage = 'Verificando catálogos...';
-          });
-
-          final dbHelper = DatabaseHelper();
-          final catalogoService = CatalogoService(dbHelper: dbHelper);
-
-          final count = await dbHelper.countCalles();
-          if (count == 0) {
-            setState(() {
-              _loadingMessage = 'Descargando calles...';
-            });
-
-            final success = await catalogoService.descargarCalles();
-            if (!success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error al descargar calles')),
-              );
-            }
-          }
-
-          // Obtener información del dispositivo
-          setState(() {
-            _loadingMessage = 'Obteniendo información del dispositivo...';
-          });
-
-          String? serial = await obtenerAndroidSN();
-          if (serial == 'unknown' ||
-              serial.isEmpty ||
-              serial == 'No disponible') {
-            serial = await obtenerAndroidID();
-          } else {
-            serial = 'SN' + serial;
-          }
-
-          // Navegar al menú principal
-          if (mounted) {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => MenuPrincipal()),
-            );
-
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Sesión exitosa\nSerie: $serial')),
-            );
-          }
+        // Si el número de serie es desconocido o no disponible, usar Android ID
+        if (serial == 'unknown' ||
+            serial.isEmpty ||
+            serial == 'No disponible') {
+          serial = await obtenerAndroidID();
         } else {
-          setState(() {
-            _errorMessage = 'Matrícula o contraseña incorrecta';
-          });
+          serial = 'SN' + serial;
         }
-      } catch (e) {
-        ScaffoldMessenger.of(
+
+        // Mostrar mensaje de éxito
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Sesión exitosa\nSerie: $serial')),
+        );
+
+        // Navegar a la pantalla principal
+        Navigator.pushReplacement(
           context,
-        ).showSnackBar(SnackBar(content: Text('Error: ${e.toString()}')));
-      } finally {
-        if (mounted) {
-          setState(() {
-            _isLoading = false;
-          });
-        }
+          MaterialPageRoute(builder: (context) => MenuPrincipal()),
+        );
+      } else {
+        setState(() {
+          _errorMessage = 'Matrícula o contraseña incorrecta';
+        });
       }
     }
   }

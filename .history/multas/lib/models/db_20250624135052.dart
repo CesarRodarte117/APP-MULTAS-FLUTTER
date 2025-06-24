@@ -45,7 +45,7 @@ class DatabaseHelper {
   static final DatabaseHelper _instance = DatabaseHelper._internal();
   static Database? _database;
 
-  factory DatabaseHelper() => _instance;
+  static factory DatabaseHelper() => _instance;
 
   DatabaseHelper._internal();
 
@@ -858,17 +858,6 @@ class DatabaseHelper {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('calles');
     return List.generate(maps.length, (i) => Calle.fromMap(maps[i]));
-  }
-
-  Future<List<Calle>> buscarCalles(String query) async {
-    final db = await database;
-    final results = await db.query(
-      'calles',
-      where: 'nombre LIKE ?',
-      whereArgs: ['%$query%'],
-      limit: 10, // Limitar resultados para mejor performance
-    );
-    return results.map((e) => Calle.fromJson(e)).toList();
   }
 
   // Eliminar todas las calles
