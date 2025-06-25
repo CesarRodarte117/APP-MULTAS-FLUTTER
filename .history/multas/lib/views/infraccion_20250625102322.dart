@@ -324,162 +324,131 @@ class _InfraccionState extends State<Infraccion> {
   Widget _buildInfractorForm() {
     final dbHelper = DatabaseHelper();
 
-    return Padding(
-      padding: EdgeInsets.only(
-        bottom: MediaQuery.of(context).viewInsets.bottom,
-      ),
-      child: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
+    return Column(
+      children: [
+        Row(
           children: [
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: "N° de licencia",
-                    ),
-
-                    validator: (value) =>
-                        value!.isEmpty ? 'Campo obligatorio' : null,
-                  ),
-                ),
-              ],
+            Expanded(
+              flex: 2,
+              child: TextFormField(
+                decoration: const InputDecoration(labelText: "N° de licencia"),
+                keyboardType: TextInputType.number,
+                validator: (value) =>
+                    value!.isEmpty ? 'Campo obligatorio' : null,
+              ),
             ),
-
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: "Estado de origen",
-                    ),
-
-                    textCapitalization: TextCapitalization
-                        .characters, // Capitaliza la primera letra de cada palabra
-                    validator: (value) =>
-                        value!.isEmpty ? 'Campo obligatorio' : null,
-                  ),
-                ),
-              ],
-            ),
-
-            TextFormField(
-              decoration: const InputDecoration(labelText: "Nombre(s)"),
-              textCapitalization: TextCapitalization
-                  .characters, // Capitaliza la primera letra de cada palabra
-              validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
-            ),
-            TextFormField(
-              decoration: const InputDecoration(labelText: "Apellido paterno"),
-              textCapitalization: TextCapitalization
-                  .characters, // Capitaliza la primera letra de cada palabra
-              validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
-            ),
-            TextFormField(
-              textCapitalization: TextCapitalization
-                  .characters, // Capitaliza la primera letra de cada palabra
-              decoration: const InputDecoration(labelText: "Apellido materno"),
-              validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
-            ),
-
-            Row(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: DropdownButtonFormField<String>(
-                    decoration: const InputDecoration(labelText: "Género"),
-                    validator: (value) =>
-                        value == null ? 'Campo obligatorio' : null,
-                    items: const [
-                      DropdownMenuItem(value: "HOMBRE", child: Text("HOMBRE")),
-                      DropdownMenuItem(value: "MUJER", child: Text("MUJER")),
-                    ],
-                    onChanged: (value) {
-                      // Aquí puedes guardar el valor seleccionado si es necesario
-                      // Ejemplo: setState(() { _generoSeleccionado = value; });
-                    },
-                    hint: const Text("Seleccione género"), // Texto por defecto
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  flex: 2,
-                  child: TextFormField(
-                    decoration: const InputDecoration(labelText: "Edad"),
-                    keyboardType: TextInputType.number,
-                    validator: (value) =>
-                        value!.isEmpty ? 'Campo obligatorio' : null,
-                  ),
-                ),
-              ],
-            ),
-
             const SizedBox(width: 10),
-            CalleAutocomplete(
-              dbHelper: dbHelper,
-              onCalleSelected: (calle) {
-                setState(() {
-                  _calleSeleccionada = calle;
-                });
-              },
-              labelText: "Calle",
-              initialValue: _calleSeleccionada,
-            ),
-
-            Row(
-              children: [
-                Expanded(
-                  child: TextFormField(
-                    decoration: const InputDecoration(labelText: "N° Exterior"),
-                    keyboardType: TextInputType.number,
-                    validator: (value) =>
-                        value!.isEmpty ? 'Campo obligatorio' : null,
-                  ),
+            Expanded(
+              flex: 3,
+              child: TextFormField(
+                decoration: const InputDecoration(
+                  labelText: "Estado de origen",
                 ),
-                const SizedBox(width: 10),
-                Expanded(
-                  child: TextFormField(
-                    decoration: const InputDecoration(
-                      labelText: "N° Interior (opcional)",
-                    ),
-                    keyboardType: TextInputType.number,
-                  ),
-                ),
-              ],
-            ),
-
-            Row(
-              children: [
-                Expanded(
-                  flex: 3,
-                  child: TextFormField(
-                    decoration: const InputDecoration(labelText: "Colonia"),
-                    validator: (value) =>
-                        value!.isEmpty ? 'Campo obligatorio' : null,
-                  ),
-                ),
-                const SizedBox(width: 10),
-                Expanded(
-                  flex: 2,
-                  child: TextFormField(
-                    decoration: const InputDecoration(labelText: "C.P."),
-                    keyboardType: TextInputType.number,
-                    validator: (value) =>
-                        value!.isEmpty ? 'Campo obligatorio' : null,
-                  ),
-                ),
-              ],
-            ),
-
-            TextFormField(
-              decoration: const InputDecoration(labelText: "Teléfono"),
-              keyboardType: TextInputType.number,
-              validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
+                validator: (value) =>
+                    value!.isEmpty ? 'Campo obligatorio' : null,
+              ),
             ),
           ],
         ),
-      ),
+
+        TextFormField(
+          decoration: const InputDecoration(labelText: "Nombre(s)"),
+          validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
+        ),
+        TextFormField(
+          decoration: const InputDecoration(labelText: "Apellido paterno"),
+          validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
+        ),
+        TextFormField(
+          decoration: const InputDecoration(labelText: "Apellido materno"),
+        ),
+
+        Row(
+          children: [
+            Expanded(
+              flex: 3,
+              child: TextFormField(
+                decoration: const InputDecoration(labelText: "Género"),
+                validator: (value) =>
+                    value!.isEmpty ? 'Campo obligatorio' : null,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              flex: 2,
+              child: TextFormField(
+                decoration: const InputDecoration(labelText: "Edad"),
+                keyboardType: TextInputType.number,
+                validator: (value) =>
+                    value!.isEmpty ? 'Campo obligatorio' : null,
+              ),
+            ),
+          ],
+        ),
+
+        const SizedBox(width: 10),
+        CalleAutocomplete(
+          dbHelper: dbHelper,
+          onCalleSelected: (calle) {
+            setState(() {
+              _calleSeleccionada = calle;
+            });
+          },
+          labelText: "Calles",
+          initialValue: _calleSeleccionada,
+        ),
+
+        Row(
+          children: [
+            Expanded(
+              child: TextFormField(
+                decoration: const InputDecoration(labelText: "N° Exterior"),
+                keyboardType: TextInputType.number,
+                validator: (value) =>
+                    value!.isEmpty ? 'Campo obligatorio' : null,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              child: TextFormField(
+                decoration: const InputDecoration(
+                  labelText: "N° Interior (opcional)",
+                ),
+                keyboardType: TextInputType.number,
+              ),
+            ),
+          ],
+        ),
+
+        Row(
+          children: [
+            Expanded(
+              flex: 3,
+              child: TextFormField(
+                decoration: const InputDecoration(labelText: "Colonia"),
+                validator: (value) =>
+                    value!.isEmpty ? 'Campo obligatorio' : null,
+              ),
+            ),
+            const SizedBox(width: 10),
+            Expanded(
+              flex: 2,
+              child: TextFormField(
+                decoration: const InputDecoration(labelText: "C.P."),
+                keyboardType: TextInputType.number,
+                validator: (value) =>
+                    value!.isEmpty ? 'Campo obligatorio' : null,
+              ),
+            ),
+          ],
+        ),
+
+        TextFormField(
+          decoration: const InputDecoration(labelText: "Teléfono"),
+          keyboardType: TextInputType.phone,
+          validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
+        ),
+      ],
     );
   }
 

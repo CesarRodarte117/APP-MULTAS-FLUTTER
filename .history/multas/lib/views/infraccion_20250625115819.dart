@@ -335,28 +335,23 @@ class _InfraccionState extends State<Infraccion> {
             Row(
               children: [
                 Expanded(
+                  flex: 2,
                   child: TextFormField(
                     decoration: const InputDecoration(
                       labelText: "N° de licencia",
                     ),
-
+                    keyboardType: TextInputType.number,
                     validator: (value) =>
                         value!.isEmpty ? 'Campo obligatorio' : null,
                   ),
                 ),
-              ],
-            ),
-
-            Row(
-              children: [
+                const SizedBox(width: 10),
                 Expanded(
+                  flex: 3,
                   child: TextFormField(
                     decoration: const InputDecoration(
                       labelText: "Estado de origen",
                     ),
-
-                    textCapitalization: TextCapitalization
-                        .characters, // Capitaliza la primera letra de cada palabra
                     validator: (value) =>
                         value!.isEmpty ? 'Campo obligatorio' : null,
                   ),
@@ -380,7 +375,6 @@ class _InfraccionState extends State<Infraccion> {
               textCapitalization: TextCapitalization
                   .characters, // Capitaliza la primera letra de cada palabra
               decoration: const InputDecoration(labelText: "Apellido materno"),
-              validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
             ),
 
             Row(
@@ -423,7 +417,7 @@ class _InfraccionState extends State<Infraccion> {
                   _calleSeleccionada = calle;
                 });
               },
-              labelText: "Calle",
+              labelText: "Calles",
               initialValue: _calleSeleccionada,
             ),
 
@@ -474,7 +468,7 @@ class _InfraccionState extends State<Infraccion> {
 
             TextFormField(
               decoration: const InputDecoration(labelText: "Teléfono"),
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.phone,
               validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
             ),
           ],

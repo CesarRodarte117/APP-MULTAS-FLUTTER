@@ -335,6 +335,7 @@ class _InfraccionState extends State<Infraccion> {
             Row(
               children: [
                 Expanded(
+                  flex: 2,
                   child: TextFormField(
                     decoration: const InputDecoration(
                       labelText: "N° de licencia",
@@ -344,12 +345,9 @@ class _InfraccionState extends State<Infraccion> {
                         value!.isEmpty ? 'Campo obligatorio' : null,
                   ),
                 ),
-              ],
-            ),
-
-            Row(
-              children: [
+                const SizedBox(width: 10),
                 Expanded(
+                  flex: 3,
                   child: TextFormField(
                     decoration: const InputDecoration(
                       labelText: "Estado de origen",
@@ -423,7 +421,7 @@ class _InfraccionState extends State<Infraccion> {
                   _calleSeleccionada = calle;
                 });
               },
-              labelText: "Calle",
+              labelText: "Calles",
               initialValue: _calleSeleccionada,
             ),
 
@@ -474,7 +472,7 @@ class _InfraccionState extends State<Infraccion> {
 
             TextFormField(
               decoration: const InputDecoration(labelText: "Teléfono"),
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.phone,
               validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
             ),
           ],

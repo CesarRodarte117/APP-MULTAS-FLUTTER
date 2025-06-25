@@ -423,7 +423,7 @@ class _InfraccionState extends State<Infraccion> {
                   _calleSeleccionada = calle;
                 });
               },
-              labelText: "Calle",
+              labelText: "Calles",
               initialValue: _calleSeleccionada,
             ),
 
@@ -474,7 +474,7 @@ class _InfraccionState extends State<Infraccion> {
 
             TextFormField(
               decoration: const InputDecoration(labelText: "Teléfono"),
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.phone,
               validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
             ),
           ],

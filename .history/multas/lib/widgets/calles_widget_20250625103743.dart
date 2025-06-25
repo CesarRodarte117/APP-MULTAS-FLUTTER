@@ -12,7 +12,7 @@ class CalleAutocomplete extends StatefulWidget {
     Key? key,
     required this.dbHelper,
     required this.onCalleSelected,
-    this.labelText = "Calle",
+    this.labelText = "Calles",
     this.initialValue,
   }) : super(key: key);
 
@@ -53,53 +53,10 @@ class _CalleAutocompleteState extends State<CalleAutocomplete> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (_callesFiltradas.isNotEmpty)
-          Transform.translate(
-            offset: Offset(0, -MediaQuery.of(context).viewInsets.bottom),
-            child: Container(
-              margin: const EdgeInsets.only(top: 0),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                border: Border.all(color: Colors.grey),
-                borderRadius: BorderRadius.circular(4),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withOpacity(0.1),
-                    blurRadius: 4,
-                    offset: const Offset(0, 2),
-                  ),
-                ],
-              ),
-              constraints: const BoxConstraints(maxHeight: 200),
-              child: ListView.builder(
-                shrinkWrap: true,
-                physics: const ClampingScrollPhysics(),
-                itemCount: _callesFiltradas.length,
-                itemBuilder: (context, index) {
-                  final calle = _callesFiltradas[index];
-                  return ListTile(
-                    title: Text(calle.nombre),
-                    onTap: () {
-                      _controller.text = calle.nombre;
-                      _calleSeleccionada = calle;
-                      widget.onCalleSelected(calle);
-                      setState(() {
-                        _callesFiltradas = [];
-                      });
-                      FocusScope.of(context).unfocus(); // Cierra el teclado
-                    },
-                  );
-                },
-              ),
-            ),
-          ),
         TextFormField(
           controller: _controller,
-          textCapitalization: TextCapitalization
-              .characters, // Capitaliza la primera letra de cada palabra
           decoration: InputDecoration(
             labelText: widget.labelText,
-
             suffixIcon: _controller.text.isNotEmpty
                 ? IconButton(
                     icon: const Icon(Icons.close),
@@ -121,6 +78,44 @@ class _CalleAutocompleteState extends State<CalleAutocomplete> {
           },
           validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
         ),
+        if (_callesFiltradas.isNotEmpty)
+          Padding(
+            padding: EdgeInsets.only(
+              bottom: MediaQuery.of(context).viewInsets.bottom,
+            ),
+            child: Material(
+              elevation: 4.0,
+              child: ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: MediaQuery.of(context).size.height * 3,
+                ),
+                child: Scrollbar(
+                  child: ListView.builder(
+                    padding: EdgeInsets.zero,
+                    shrinkWrap: true,
+                    physics: const ClampingScrollPhysics(),
+                    itemCount: _callesFiltradas.length,
+                    itemBuilder: (context, index) {
+                      final calle = _callesFiltradas[index];
+                      return ListTile(
+                        title: Text(calle.nombre),
+                        onTap: () {
+                          _controller.text = calle.nombre;
+                          _calleSeleccionada = calle;
+                          widget.onCalleSelected(calle);
+                          setState(() {
+                            _callesFiltradas = [];
+                          });
+                          // Cierra el teclado al seleccionar una opción
+                          FocusScope.of(context).unfocus();
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ),
+            ),
+          ),
       ],
     );
   }

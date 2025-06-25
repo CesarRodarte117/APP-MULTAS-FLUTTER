@@ -290,65 +290,6 @@ class _loginPageState extends State<LoginPage> {
               );
             }
           }
-          // 1. Para Ciudades
-          final countCiudades = await dbHelper.countCiudades();
-          if (countCiudades == 0) {
-            setState(() {
-              _loadingMessage = 'Descargando ciudades...';
-            });
-
-            final success = await catalogoService.descargarCiudades();
-            if (!success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error al descargar ciudades')),
-              );
-            }
-          }
-
-          // 2. Para Costos
-          final countCostos = await dbHelper.countCostos();
-          if (countCostos == 0) {
-            setState(() {
-              _loadingMessage = 'Descargando costos...';
-            });
-
-            final success = await catalogoService.descargarCostos();
-            if (!success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error al descargar costos')),
-              );
-            }
-          }
-
-          // 3. Para Submarcas
-          final countSubmarcas = await dbHelper.countSubmarcas();
-          if (countSubmarcas == 0) {
-            setState(() {
-              _loadingMessage = 'Descargando submarcas...';
-            });
-
-            final success = await catalogoService.descargarSubmarcas();
-            if (!success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error al descargar submarcas')),
-              );
-            }
-          }
-
-          // 4. Para Motivos
-          final countMotivos = await dbHelper.countMotivos();
-          if (countMotivos == 0) {
-            setState(() {
-              _loadingMessage = 'Descargando motivos...';
-            });
-
-            final success = await catalogoService.descargarMotivos();
-            if (!success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error al descargar motivos')),
-              );
-            }
-          }
 
           // Obtener información del dispositivo
           setState(() {

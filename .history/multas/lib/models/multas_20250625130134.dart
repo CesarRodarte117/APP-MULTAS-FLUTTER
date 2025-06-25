@@ -309,80 +309,74 @@ class Departamentos {
 
 // SELECT id, clave, nombre FROM Documentoss;
 class Documentos {
-  final int? id;
-  final String clave;
-  final String nombre;
+  int? id;
+  String? clave;
+  String? nombre;
 
-  Documentos({this.id, required this.clave, required this.nombre});
+  Documentos({this.id, this.clave, this.nombre});
 
-  factory Documentos.fromJson(Map<String, dynamic> json) {
-    return Documentos(
-      id: json['id'] as int?,
-      clave: json['clave'] ?? '',
-      nombre: json['nombre'] ?? '',
-    );
+  Map<String, dynamic> toMap() {
+    return {'id': id, 'clave': clave, 'nombre': nombre};
   }
 
   factory Documentos.fromMap(Map<String, dynamic> map) {
     return Documentos(
-      id: map['id'] as int?,
-      clave: map['clave'] as String,
-      nombre: map['nombre'] as String,
+      id: map['id'],
+      clave: map['clave']?.toString(),
+      nombre: map['nombre']?.toString(),
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return {'id': id, 'clave': clave, 'nombre': nombre};
+  @override
+  String toString() {
+    return 'Documentos{id: $id, clave: $clave, nombre: $nombre}';
   }
 }
 
 // SELECT id, clave, nombre FROM estaciones;
 class Estaciones {
-  final int? id;
-  final String clave;
-  final String nombre;
+  int? id;
+  String? clave;
+  String? nombre;
 
-  Estaciones({this.id, required this.clave, required this.nombre});
-
-  factory Estaciones.fromJson(Map<String, dynamic> json) {
-    return Estaciones(
-      id: json['id'] as int?,
-      clave: json['clave'] ?? '',
-      nombre: json['nombre'] ?? '',
-    );
-  }
-
-  factory Estaciones.fromMap(Map<String, dynamic> map) {
-    return Estaciones(
-      id: map['id'] as int?,
-      clave: map['clave'] as String,
-      nombre: map['nombre'] as String,
-    );
-  }
+  Estaciones({this.id, this.clave, this.nombre});
 
   Map<String, dynamic> toMap() {
     return {'id': id, 'clave': clave, 'nombre': nombre};
   }
+
+  factory Estaciones.fromMap(Map<String, dynamic> map) {
+    return Estaciones(
+      id: map['id'],
+      clave: map['clave']?.toString(),
+      nombre: map['nombre']?.toString(),
+    );
+  }
+
+  @override
+  String toString() {
+    return 'Estaciones{id: $id, clave: $clave, nombre: $nombre}';
+  }
 }
 
 // SELECT id, clave, nombre FROM estados;
-class Estados {
+class Estado {
   final int? id;
   final String clave;
   final String nombre;
 
-  Estados({this.id, required this.clave, required this.nombre});
+  Estado({this.id, required this.clave, required this.nombre});
 
-  factory Estados.fromJson(Map<String, dynamic> json) {
-    return Estados(
+  factory Estado.fromJson(Map<String, dynamic> json) {
+    return Estado(
       id: json['id'] as int?,
       clave: json['clave'] ?? '',
       nombre: json['nombre'] ?? '',
     );
   }
 
-  factory Estados.fromMap(Map<String, dynamic> map) {
-    return Estados(
+  factory Estado.fromMap(Map<String, dynamic> map) {
+    return Estado(
       id: map['id'] as int?,
       clave: map['clave'] as String,
       nombre: map['nombre'] as String,
@@ -912,59 +906,53 @@ class Infraccionvehiculo {
 
 // SELECT id, clave, nombre FROM lotes;
 class Lotes {
-  final int? id;
-  final String clave;
-  final String nombre;
+  int? id;
+  String? clave;
+  String? nombre;
 
-  Lotes({this.id, required this.clave, required this.nombre});
+  Lotes({this.id, this.clave, this.nombre});
 
-  factory Lotes.fromJson(Map<String, dynamic> json) {
-    return Lotes(
-      id: json['id'] as int?,
-      clave: json['clave'] ?? '',
-      nombre: json['nombre'] ?? '',
-    );
+  Map<String, dynamic> toMap() {
+    return {'id': id, 'clave': clave, 'nombre': nombre};
   }
 
   factory Lotes.fromMap(Map<String, dynamic> map) {
     return Lotes(
-      id: map['id'] as int?,
-      clave: map['clave'] as String,
-      nombre: map['nombre'] as String,
+      id: map['id'],
+      clave: map['clave']?.toString(),
+      nombre: map['nombre']?.toString(),
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return {'id': id, 'clave': clave, 'nombre': nombre};
+  @override
+  String toString() {
+    return 'Lotes{id: $id, clave: $clave, nombre: $nombre}';
   }
 }
 
 // SELECT id, clave, nombre FROM marcas;
 class Marcas {
-  final int? id;
-  final String clave;
-  final String nombre;
+  int? id;
+  String? clave;
+  String? nombre;
 
-  Marcas({this.id, required this.clave, required this.nombre});
+  Marcas({this.id, this.clave, this.nombre});
 
-  factory Marcas.fromJson(Map<String, dynamic> json) {
-    return Marcas(
-      id: json['id'] as int?,
-      clave: json['clave'] ?? '',
-      nombre: json['nombre'] ?? '',
-    );
+  Map<String, dynamic> toMap() {
+    return {'id': id, 'clave': clave, 'nombre': nombre};
   }
 
   factory Marcas.fromMap(Map<String, dynamic> map) {
     return Marcas(
-      id: map['id'] as int?,
-      clave: map['clave'] as String,
-      nombre: map['nombre'] as String,
+      id: map['id'],
+      clave: map['clave']?.toString(),
+      nombre: map['nombre']?.toString(),
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return {'id': id, 'clave': clave, 'nombre': nombre};
+  @override
+  String toString() {
+    return 'Marcas{id: $id, clave: $clave, nombre: $nombre}';
   }
 }
 
@@ -974,9 +962,9 @@ class Motivos {
   String? clave;
   String? nombre;
   double? uma;
-  double? descuento; // numeric en PostgreSQL
-  int? periodo_descuento;
-  String? peritos; // character varying (YES/NO) en PostgreSQL
+  double? descuento;
+  double? periodo_descuento;
+  bool? peritos;
   String? articulo;
   String? fraccion;
   String? sancion;
@@ -994,23 +982,6 @@ class Motivos {
     this.sancion,
   });
 
-  factory Motivos.fromJson(Map<String, dynamic> json) {
-    return Motivos(
-      id: json['id'] as int?,
-      clave: json['clave'] as String? ?? '',
-      nombre: json['nombre'] as String? ?? '',
-      uma: _parseDouble(json['uma']),
-      descuento: _parseDouble(json['descuento']),
-      periodo_descuento: _parseInt(json['periodo_descuento']),
-      peritos: _parsePeritos(
-        json['peritos'],
-      ), // Conversión específica para YES/NO
-      articulo: json['articulo'] as String? ?? '',
-      fraccion: json['fraccion'] as String? ?? '',
-      sancion: json['sancion'] as String? ?? '',
-    );
-  }
-
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -1019,7 +990,7 @@ class Motivos {
       'uma': uma,
       'descuento': descuento,
       'periodo_descuento': periodo_descuento,
-      'peritos': peritos, // Se mantiene como String (YES/NO)
+      'peritos': peritos,
       'articulo': articulo,
       'fraccion': fraccion,
       'sancion': sancion,
@@ -1028,51 +999,22 @@ class Motivos {
 
   factory Motivos.fromMap(Map<String, dynamic> map) {
     return Motivos(
-      id: map['id'] as int?,
-      clave: map['clave'] as String? ?? '',
-      nombre: map['nombre'] as String? ?? '',
-      uma: _parseDouble(map['uma']),
-      descuento: _parseDouble(map['descuento']),
-      periodo_descuento: _parseInt(map['periodo_descuento']),
-      peritos: _parsePeritos(map['peritos']), // Conversión específica
-      articulo: map['articulo'] as String? ?? '',
-      fraccion: map['fraccion'] as String? ?? '',
-      sancion: map['sancion'] as String? ?? '',
+      id: map['id'],
+      clave: map['clave']?.toString(),
+      nombre: map['nombre']?.toString(),
+      uma: map['uma'],
+      descuento: map['descuento'],
+      periodo_descuento: map['periodo_descuento'],
+      peritos: map['peritos'],
+      articulo: map['articulo']?.toString(),
+      fraccion: map['fraccion']?.toString(),
+      sancion: map['sancion']?.toString(),
     );
-  }
-
-  // Helpers para parseo seguro
-  static double? _parseDouble(dynamic value) {
-    if (value == null) return null;
-    return value is double
-        ? value
-        : (value is int ? value.toDouble() : double.tryParse(value.toString()));
-  }
-
-  static int? _parseInt(dynamic value) {
-    if (value == null) return null;
-    return value is int ? value : int.tryParse(value.toString());
-  }
-
-  static String _parsePeritos(dynamic value) {
-    if (value == null) return 'NO';
-    if (value is String) {
-      return value.toUpperCase() == 'YES' ? 'YES' : 'NO';
-    }
-    if (value is bool) {
-      return value ? 'YES' : 'NO';
-    }
-    if (value is int) {
-      return value == 1 ? 'YES' : 'NO';
-    }
-    return 'NO';
   }
 
   @override
   String toString() {
-    return 'Motivos{id: $id, clave: $clave, nombre: $nombre, uma: $uma, descuento: $descuento, '
-        'periodo_descuento: $periodo_descuento, peritos: $peritos, articulo: $articulo, '
-        'fraccion: $fraccion, sancion: $sancion}';
+    return 'Motivos{id: $id, clave: $clave, nombre: $nombre, uma: $uma, descuento: $descuento, periodo_descuento: $periodo_descuento, peritos: $peritos, articulo: $articulo, fraccion: $fraccion, sancion: $sancion}';
   }
 }
 
@@ -1165,30 +1107,27 @@ class Parametros {
 
 // SELECT id, clave, nombre FROM sectores;
 class Sectores {
-  final int? id;
-  final String clave;
-  final String nombre;
+  int? id;
+  String? clave;
+  String? nombre;
 
-  Sectores({this.id, required this.clave, required this.nombre});
+  Sectores({this.id, this.clave, this.nombre});
 
-  factory Sectores.fromJson(Map<String, dynamic> json) {
-    return Sectores(
-      id: json['id'] as int?,
-      clave: json['clave'] ?? '',
-      nombre: json['nombre'] ?? '',
-    );
+  Map<String, dynamic> toMap() {
+    return {'id': id, 'clave': clave, 'nombre': nombre};
   }
 
   factory Sectores.fromMap(Map<String, dynamic> map) {
     return Sectores(
-      id: map['id'] as int?,
-      clave: map['clave'] as String,
-      nombre: map['nombre'] as String,
+      id: map['id'],
+      clave: map['clave']?.toString(),
+      nombre: map['nombre']?.toString(),
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return {'id': id, 'clave': clave, 'nombre': nombre};
+  @override
+  String toString() {
+    return 'Sectores{id: $id, clave: $clave, nombre: $nombre}';
   }
 }
 
@@ -1280,29 +1219,26 @@ class Submarcas {
 
 // SELECT id, clave, nombre FROM unidades;
 class Unidades {
-  final int? id;
-  final String clave;
-  final String nombre;
+  int? id;
+  String? clave;
+  String? nombre;
 
-  Unidades({this.id, required this.clave, required this.nombre});
+  Unidades({this.id, this.clave, this.nombre});
 
-  factory Unidades.fromJson(Map<String, dynamic> json) {
-    return Unidades(
-      id: json['id'] as int?,
-      clave: json['clave'] ?? '',
-      nombre: json['nombre'] ?? '',
-    );
+  Map<String, dynamic> toMap() {
+    return {'id': id, 'clave': clave, 'nombre': nombre};
   }
 
   factory Unidades.fromMap(Map<String, dynamic> map) {
     return Unidades(
-      id: map['id'] as int?,
-      clave: map['clave'] as String,
-      nombre: map['nombre'] as String,
+      id: map['id'],
+      clave: map['clave']?.toString(),
+      nombre: map['nombre']?.toString(),
     );
   }
 
-  Map<String, dynamic> toMap() {
-    return {'id': id, 'clave': clave, 'nombre': nombre};
+  @override
+  String toString() {
+    return 'Unidades{id: $id, clave: $clave, nombre: $nombre}';
   }
 }

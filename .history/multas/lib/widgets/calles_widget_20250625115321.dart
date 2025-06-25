@@ -95,8 +95,7 @@ class _CalleAutocompleteState extends State<CalleAutocomplete> {
           ),
         TextFormField(
           controller: _controller,
-          textCapitalization: TextCapitalization
-              .characters, // Capitaliza la primera letra de cada palabra
+          textCapitalization: TextCapitalization.characters,
           decoration: InputDecoration(
             labelText: widget.labelText,
 

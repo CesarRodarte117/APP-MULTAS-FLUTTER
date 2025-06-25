@@ -53,11 +53,36 @@ class _CalleAutocompleteState extends State<CalleAutocomplete> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
+        TextFormField(
+          controller: _controller,
+          decoration: InputDecoration(
+            labelText: widget.labelText,
+            suffixIcon: _controller.text.isNotEmpty
+                ? IconButton(
+                    icon: const Icon(Icons.close),
+                    onPressed: () {
+                      _controller.clear();
+                      _filtrarCalles('');
+                      widget.onCalleSelected(null);
+                    },
+                  )
+                : null,
+          ),
+          onChanged: (value) {
+            _filtrarCalles(value);
+            if (_calleSeleccionada != null &&
+                _calleSeleccionada!.nombre != value) {
+              _calleSeleccionada = null;
+              widget.onCalleSelected(null);
+            }
+          },
+          validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
+        ),
         if (_callesFiltradas.isNotEmpty)
           Transform.translate(
             offset: Offset(0, -MediaQuery.of(context).viewInsets.bottom),
             child: Container(
-              margin: const EdgeInsets.only(top: 0),
+              margin: const EdgeInsets.only(top: 4),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(color: Colors.grey),
@@ -93,34 +118,6 @@ class _CalleAutocompleteState extends State<CalleAutocomplete> {
               ),
             ),
           ),
-        TextFormField(
-          controller: _controller,
-          textCapitalization: TextCapitalization
-              .characters, // Capitaliza la primera letra de cada palabra
-          decoration: InputDecoration(
-            labelText: widget.labelText,
-
-            suffixIcon: _controller.text.isNotEmpty
-                ? IconButton(
-                    icon: const Icon(Icons.close),
-                    onPressed: () {
-                      _controller.clear();
-                      _filtrarCalles('');
-                      widget.onCalleSelected(null);
-                    },
-                  )
-                : null,
-          ),
-          onChanged: (value) {
-            _filtrarCalles(value);
-            if (_calleSeleccionada != null &&
-                _calleSeleccionada!.nombre != value) {
-              _calleSeleccionada = null;
-              widget.onCalleSelected(null);
-            }
-          },
-          validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
-        ),
       ],
     );
   }

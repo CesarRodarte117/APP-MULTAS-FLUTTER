@@ -57,7 +57,7 @@ class _CalleAutocompleteState extends State<CalleAutocomplete> {
           Transform.translate(
             offset: Offset(0, -MediaQuery.of(context).viewInsets.bottom),
             child: Container(
-              margin: const EdgeInsets.only(top: 0),
+              margin: const EdgeInsets.only(top: 80),
               decoration: BoxDecoration(
                 color: Colors.white,
                 border: Border.all(color: Colors.grey),
@@ -95,11 +95,8 @@ class _CalleAutocompleteState extends State<CalleAutocomplete> {
           ),
         TextFormField(
           controller: _controller,
-          textCapitalization: TextCapitalization
-              .characters, // Capitaliza la primera letra de cada palabra
           decoration: InputDecoration(
             labelText: widget.labelText,
-
             suffixIcon: _controller.text.isNotEmpty
                 ? IconButton(
                     icon: const Icon(Icons.close),

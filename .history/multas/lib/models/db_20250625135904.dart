@@ -455,40 +455,40 @@ class DatabaseHelper {
   }
 
   // ========== FUNCIONES PARA MOTIVOS ==========
-  // Future<void> insertMotivo(Motivos motivo) async {
-  //   final db = await database;
-  //   await db.insert('motivos', {
-  //     'id': motivo.id,
-  //     'clave': motivo.clave,
-  //     'nombre': motivo.nombre,
-  //     'uma': motivo.uma,
-  //     'descuento': motivo.descuento,
-  //     'periodo_descuento': motivo.periodo_descuento,
-  //     'peritos': motivo.peritos != null ? (motivo.peritos! ? 1 : 0) : null,
-  //     'articulo': motivo.articulo,
-  //     'fraccion': motivo.fraccion,
-  //     'sancion': motivo.sancion,
-  //   }, conflictAlgorithm: ConflictAlgorithm.replace);
-  // }
+  Future<void> insertMotivo(Motivos motivo) async {
+    final db = await database;
+    await db.insert('motivos', {
+      'id': motivo.id,
+      'clave': motivo.clave,
+      'nombre': motivo.nombre,
+      'uma': motivo.uma,
+      'descuento': motivo.descuento,
+      'periodo_descuento': motivo.periodo_descuento,
+      'peritos': motivo.peritos != null ? (motivo.peritos! ? 1 : 0) : null,
+      'articulo': motivo.articulo,
+      'fraccion': motivo.fraccion,
+      'sancion': motivo.sancion,
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
+  }
 
-  // Future<List<Motivos>> getAllMotivos() async {
-  //   final db = await database;
-  //   final maps = await db.query('motivos');
-  //   return List.generate(maps.length, (i) {
-  //     return Motivos.fromMap({
-  //       'id': maps[i]['id'],
-  //       'clave': maps[i]['clave'],
-  //       'nombre': maps[i]['nombre'],
-  //       'uma': maps[i]['uma'],
-  //       'descuento': maps[i]['descuento'],
-  //       'periodo_descuento': maps[i]['periodo_descuento'],
-  //       'peritos': maps[i]['peritos'] == 1, // Convertir a booleano
-  //       'articulo': maps[i]['articulo'],
-  //       'fraccion': maps[i]['fraccion'],
-  //       'sancion': maps[i]['sancion'],
-  //     });
-  //   });
-  // }
+  Future<List<Motivos>> getAllMotivos() async {
+    final db = await database;
+    final maps = await db.query('motivos');
+    return List.generate(maps.length, (i) {
+      return Motivos.fromMap({
+        'id': maps[i]['id'],
+        'clave': maps[i]['clave'],
+        'nombre': maps[i]['nombre'],
+        'uma': maps[i]['uma'],
+        'descuento': maps[i]['descuento'],
+        'periodo_descuento': maps[i]['periodo_descuento'],
+        'peritos': maps[i]['peritos'] == 1, // Convertir a booleano
+        'articulo': maps[i]['articulo'],
+        'fraccion': maps[i]['fraccion'],
+        'sancion': maps[i]['sancion'],
+      });
+    });
+  }
 
   // ========== FUNCIONES PARA INFRACCIÓN RETENCIÓN ==========
   Future<void> insertInfraccionRetencion(Infraccionretencion retencion) async {

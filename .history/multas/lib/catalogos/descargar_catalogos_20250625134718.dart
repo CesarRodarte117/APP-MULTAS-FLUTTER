@@ -196,7 +196,7 @@ class CatalogoService {
         actualizar: actualizar,
       );
 
-  // FALTA: Ciudades, Costos, Submarcas, Motivos
+  // FALTA: Ciudades, Costos, Submarcas
   Future<bool> descargarCiudades({bool actualizar = false}) =>
       _descargarCatalogo<Ciudades>(
         nombreCatalogo: 'ciudades',
@@ -262,7 +262,7 @@ class CatalogoService {
           nombre: json['nombre'],
           uma: json['uma'],
           descuento: json['descuento'],
-          periodo_descuento: json['periodo_descuento'],
+          periodoDescuento: json['periodo_descuento'],
           peritos: json['peritos'],
           articulo: json['articulo'],
           fraccion: json['fraccion'],

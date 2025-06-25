@@ -19,14 +19,13 @@ export 'db.dart';
 // SELECT id, clave, nombre FROM sectores;
 // SELECT id, clave, nombre FROM unidades;
 
-// SELECT id, estado, clave, nombre FROM ciudades;
-// SELECT id, periodo, servicio_medico, salario_minimo, hospedaje, hospedaje_doble, grua_sencilla, grua_operadora, grua_doble FROM costos;
 // SELECT id, clave, nombre, marca FROM submarcas;
-// SELECT id, clave, nombre, uma, descuento, periodo_descuento, peritos, articulo, fraccion, sancion FROM motivos;
 
 // SELECT id, clave, fecha, dias FROM catalogos;
+// SELECT id, estado, clave, nombre FROM ciudades;
 
 // SELECT id, clave, valor, descripcion FROM configuracion;
+// SELECT id, periodo, servicio_medico, salario_minimo, hospedaje, hospedaje_doble, grua_sencilla, grua_operadora, grua_doble FROM costos;
 
 // SELECT id, idsesion, inicial, "final", actual FROM folios;
 // SELECT id, infraccion, agente, fecha, placas, estado, municipio, calle_infraccion, calle_infraccion2, unidad, departamento, estacion,
@@ -39,6 +38,7 @@ export 'db.dart';
 // SELECT id, idinfraccion, gruaschicas, gruasgrandes, lote, inventario FROM infraccionretencion;
 // SELECT id, idinfraccion, marca, submarca, modelo, color, extranjero FROM infraccionvehiculo;
 
+// SELECT id, clave, nombre, uma, descuento, periodo_descuento, peritos, articulo, fraccion, sancion FROM motivos;
 // SELECT id, respuesta, autorizacion, cfolio, orderid, fecha_hora, total, status FROM pagos;
 // SELECT id, clave, valor, descripcion FROM parametros;
 
@@ -422,6 +422,38 @@ class DatabaseHelper {
     return List.generate(maps.length, (i) => Sesion.fromMap(maps[i]));
   }
 
+  // ========== FUNCIONES PARA SUBMARCAS ==========
+  Future<void> insertSubmarca(Submarcas submarca) async {
+    final db = await database;
+    await db.insert(
+      'submarcas',
+      submarca.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<List<Submarcas>> getAllSubmarcas() async {
+    final db = await database;
+    final maps = await db.query('submarcas');
+    return List.generate(maps.length, (i) => Submarcas.fromMap(maps[i]));
+  }
+
+  // ========== FUNCIONES PARA UNIDADES ==========
+  Future<void> insertUnidad(Unidades unidad) async {
+    final db = await database;
+    await db.insert(
+      'unidades',
+      unidad.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<List<Unidades>> getAllUnidades() async {
+    final db = await database;
+    final maps = await db.query('unidades');
+    return List.generate(maps.length, (i) => Unidades.fromMap(maps[i]));
+  }
+
   // ========== FUNCIONES PARA PAGOS ==========
   Future<void> insertPago(Pagos pago) async {
     final db = await database;
@@ -454,41 +486,73 @@ class DatabaseHelper {
     return List.generate(maps.length, (i) => Parametros.fromMap(maps[i]));
   }
 
-  // ========== FUNCIONES PARA MOTIVOS ==========
-  // Future<void> insertMotivo(Motivos motivo) async {
-  //   final db = await database;
-  //   await db.insert('motivos', {
-  //     'id': motivo.id,
-  //     'clave': motivo.clave,
-  //     'nombre': motivo.nombre,
-  //     'uma': motivo.uma,
-  //     'descuento': motivo.descuento,
-  //     'periodo_descuento': motivo.periodo_descuento,
-  //     'peritos': motivo.peritos != null ? (motivo.peritos! ? 1 : 0) : null,
-  //     'articulo': motivo.articulo,
-  //     'fraccion': motivo.fraccion,
-  //     'sancion': motivo.sancion,
-  //   }, conflictAlgorithm: ConflictAlgorithm.replace);
-  // }
+  // ========== FUNCIONES PARA SECTORES ==========
+  Future<void> insertSector(Sectores sector) async {
+    final db = await database;
+    await db.insert(
+      'sectores',
+      sector.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
 
-  // Future<List<Motivos>> getAllMotivos() async {
-  //   final db = await database;
-  //   final maps = await db.query('motivos');
-  //   return List.generate(maps.length, (i) {
-  //     return Motivos.fromMap({
-  //       'id': maps[i]['id'],
-  //       'clave': maps[i]['clave'],
-  //       'nombre': maps[i]['nombre'],
-  //       'uma': maps[i]['uma'],
-  //       'descuento': maps[i]['descuento'],
-  //       'periodo_descuento': maps[i]['periodo_descuento'],
-  //       'peritos': maps[i]['peritos'] == 1, // Convertir a booleano
-  //       'articulo': maps[i]['articulo'],
-  //       'fraccion': maps[i]['fraccion'],
-  //       'sancion': maps[i]['sancion'],
-  //     });
-  //   });
-  // }
+  Future<List<Sectores>> getAllSectores() async {
+    final db = await database;
+    final maps = await db.query('sectores');
+    return List.generate(maps.length, (i) => Sectores.fromMap(maps[i]));
+  }
+
+  // ========== FUNCIONES PARA MARCAS ==========
+  Future<void> insertMarca(Marcas marca) async {
+    final db = await database;
+    await db.insert(
+      'marcas',
+      marca.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<List<Marcas>> getAllMarcas() async {
+    final db = await database;
+    final maps = await db.query('marcas');
+    return List.generate(maps.length, (i) => Marcas.fromMap(maps[i]));
+  }
+
+  // ========== FUNCIONES PARA MOTIVOS ==========
+  Future<void> insertMotivo(Motivos motivo) async {
+    final db = await database;
+    await db.insert('motivos', {
+      'id': motivo.id,
+      'clave': motivo.clave,
+      'nombre': motivo.nombre,
+      'uma': motivo.uma,
+      'descuento': motivo.descuento,
+      'periodo_descuento': motivo.periodo_descuento,
+      'peritos': motivo.peritos != null ? (motivo.peritos! ? 1 : 0) : null,
+      'articulo': motivo.articulo,
+      'fraccion': motivo.fraccion,
+      'sancion': motivo.sancion,
+    }, conflictAlgorithm: ConflictAlgorithm.replace);
+  }
+
+  Future<List<Motivos>> getAllMotivos() async {
+    final db = await database;
+    final maps = await db.query('motivos');
+    return List.generate(maps.length, (i) {
+      return Motivos.fromMap({
+        'id': maps[i]['id'],
+        'clave': maps[i]['clave'],
+        'nombre': maps[i]['nombre'],
+        'uma': maps[i]['uma'],
+        'descuento': maps[i]['descuento'],
+        'periodo_descuento': maps[i]['periodo_descuento'],
+        'peritos': maps[i]['peritos'] == 1, // Convertir a booleano
+        'articulo': maps[i]['articulo'],
+        'fraccion': maps[i]['fraccion'],
+        'sancion': maps[i]['sancion'],
+      });
+    });
+  }
 
   // ========== FUNCIONES PARA INFRACCIÓN RETENCIÓN ==========
   Future<void> insertInfraccionRetencion(Infraccionretencion retencion) async {
@@ -1011,129 +1075,6 @@ class DatabaseHelper {
         0;
   }
 
-  // ========== FUNCIONES PARA MARCAS ==========
-
-  // Insertar una marca
-  Future<int> insertMarca(Marcas marca) async {
-    final db = await database;
-    return await db.insert('marcas', marca.toMap());
-  }
-
-  // Obtener todas las marcas
-  Future<List<Marcas>> getMarcas() async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('marcas');
-    return List.generate(maps.length, (i) => Marcas.fromMap(maps[i]));
-  }
-
-  Future<List<Marcas>> buscarMarcas(String query) async {
-    final db = await database;
-    final results = await db.query(
-      'marcas',
-      where: 'nombre LIKE ?',
-      whereArgs: ['%$query%'],
-      limit: 6,
-    );
-    return results.map((e) => Marcas.fromJson(e)).toList();
-  }
-
-  // Eliminar todas las marcas
-  Future<int> deleteAllMarcas() async {
-    final db = await database;
-    return await db.delete('marcas');
-  }
-
-  // Contar marcas
-  Future<int> countMarcas() async {
-    final db = await database;
-    return Sqflite.firstIntValue(
-          await db.rawQuery('SELECT COUNT(*) FROM marcas'),
-        ) ??
-        0;
-  }
-
-  // ========== FUNCIONES PARA SECTORES ==========
-
-  // Insertar un sector
-  Future<int> insertSector(Sectores sector) async {
-    final db = await database;
-    return await db.insert('sectores', sector.toMap());
-  }
-
-  // Obtener todos los sectores
-  Future<List<Sectores>> getSectores() async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('sectores');
-    return List.generate(maps.length, (i) => Sectores.fromMap(maps[i]));
-  }
-
-  Future<List<Sectores>> buscarSectores(String query) async {
-    final db = await database;
-    final results = await db.query(
-      'sectores',
-      where: 'nombre LIKE ?',
-      whereArgs: ['%$query%'],
-      limit: 6,
-    );
-    return results.map((e) => Sectores.fromJson(e)).toList();
-  }
-
-  // Eliminar todos los sectores
-  Future<int> deleteAllSectores() async {
-    final db = await database;
-    return await db.delete('sectores');
-  }
-
-  // Contar sectores
-  Future<int> countSectores() async {
-    final db = await database;
-    return Sqflite.firstIntValue(
-          await db.rawQuery('SELECT COUNT(*) FROM sectores'),
-        ) ??
-        0;
-  }
-
-  // ========== FUNCIONES PARA UNIDADES ==========
-
-  // Insertar una unidad
-  Future<int> insertUnidad(Unidades unidad) async {
-    final db = await database;
-    return await db.insert('unidades', unidad.toMap());
-  }
-
-  // Obtener todas las unidades
-  Future<List<Unidades>> getUnidades() async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('unidades');
-    return List.generate(maps.length, (i) => Unidades.fromMap(maps[i]));
-  }
-
-  Future<List<Unidades>> buscarUnidades(String query) async {
-    final db = await database;
-    final results = await db.query(
-      'unidades',
-      where: 'nombre LIKE ?',
-      whereArgs: ['%$query%'],
-      limit: 6,
-    );
-    return results.map((e) => Unidades.fromJson(e)).toList();
-  }
-
-  // Eliminar todas las unidades
-  Future<int> deleteAllUnidades() async {
-    final db = await database;
-    return await db.delete('unidades');
-  }
-
-  // Contar unidades
-  Future<int> countUnidades() async {
-    final db = await database;
-    return Sqflite.firstIntValue(
-          await db.rawQuery('SELECT COUNT(*) FROM unidades'),
-        ) ??
-        0;
-  }
-
   // ========== FUNCIONES PARA CATALOGOS ==========
 
   // Función para insertar
@@ -1155,117 +1096,27 @@ class DatabaseHelper {
     });
   }
 
-  // Contar ciudades
-  Future<int> countCiudades() async {
-    final db = await database;
-    return Sqflite.firstIntValue(
-          await db.rawQuery('SELECT COUNT(*) FROM ciudades'),
-        ) ??
-        0;
-  }
+  // ========== FUNCIONES PARA CIUDADES ==========
 
-  // Eliminar todas las ciudades
-  Future<int> deleteAllCiudades() async {
-    final db = await database;
-    return await db.delete('ciudades');
-  }
-
-  // Insertar ciudad
-  Future<int> insertCiudad(Ciudades ciudad) async {
-    final db = await database;
-    return await db.insert('ciudades', ciudad.toMap());
+  // Insertar nueva ciudad
+  Future<void> insertCiudad(Ciudades ciudad) async {
+    final Database db = await database;
+    await db.insert(
+      'ciudades',
+      ciudad.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
   }
 
   // Obtener todas las ciudades
-  Future<List<Ciudades>> getCiudades() async {
-    final db = await database;
+  Future<List<Ciudades>> getAllCiudades() async {
+    final Database db = await database;
     final List<Map<String, dynamic>> maps = await db.query('ciudades');
-    return List.generate(maps.length, (i) => Ciudades.fromMap(maps[i]));
+    return List.generate(maps.length, (i) {
+      return Ciudades.fromMap(maps[i]);
+    });
   }
 
-  // Contar costos
-  Future<int> countCostos() async {
-    final db = await database;
-    return Sqflite.firstIntValue(
-          await db.rawQuery('SELECT COUNT(*) FROM costos'),
-        ) ??
-        0;
-  }
-
-  // Eliminar todos los costos
-  Future<int> deleteAllCostos() async {
-    final db = await database;
-    return await db.delete('costos');
-  }
-
-  // Insertar costo
-  Future<int> insertCosto(Costos costo) async {
-    final db = await database;
-    return await db.insert('costos', costo.toMap());
-  }
-
-  // Obtener todos los costos
-  Future<List<Costos>> getCostos() async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('costos');
-    return List.generate(maps.length, (i) => Costos.fromMap(maps[i]));
-  }
-
-  // Contar submarcas
-  Future<int> countSubmarcas() async {
-    final db = await database;
-    return Sqflite.firstIntValue(
-          await db.rawQuery('SELECT COUNT(*) FROM submarcas'),
-        ) ??
-        0;
-  }
-
-  // Eliminar todas las submarcas
-  Future<int> deleteAllSubmarcas() async {
-    final db = await database;
-    return await db.delete('submarcas');
-  }
-
-  // Insertar submarca
-  Future<int> insertSubmarca(Submarcas submarca) async {
-    final db = await database;
-    return await db.insert('submarcas', submarca.toMap());
-  }
-
-  // Obtener todas las submarcas
-  Future<List<Submarcas>> getSubmarcas() async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('submarcas');
-    return List.generate(maps.length, (i) => Submarcas.fromMap(maps[i]));
-  }
-
-  // Contar motivos
-  Future<int> countMotivos() async {
-    final db = await database;
-    return Sqflite.firstIntValue(
-          await db.rawQuery('SELECT COUNT(*) FROM motivos'),
-        ) ??
-        0;
-  }
-
-  // Eliminar todos los motivos
-  Future<int> deleteAllMotivos() async {
-    final db = await database;
-    return await db.delete('motivos');
-  }
-
-  // Insertar motivo
-  Future<int> insertMotivo(Motivos motivo) async {
-    final db = await database;
-    return await db.insert('motivos', motivo.toMap());
-  }
-
-  // Obtener todos los motivos
-  Future<List<Motivos>> getMotivos() async {
-    final db = await database;
-    final List<Map<String, dynamic>> maps = await db.query('motivos');
-    return List.generate(maps.length, (i) => Motivos.fromMap(maps[i]));
-  }
   // ===== CONFIGURACIÓN ===== //
 
   // Insertar configuración
@@ -1283,5 +1134,24 @@ class DatabaseHelper {
     final db = await database;
     final maps = await db.query('configuracion');
     return List.generate(maps.length, (i) => Configuracion.fromMap(maps[i]));
+  }
+
+  // ===== COSTOS ===== //
+
+  // Insertar costos
+  Future<void> insertCostos(Costos costos) async {
+    final db = await database;
+    await db.insert(
+      'costos',
+      costos.toMap(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  // Obtener todos los costos
+  Future<List<Costos>> getAllCostos() async {
+    final db = await database;
+    final maps = await db.query('costos');
+    return List.generate(maps.length, (i) => Costos.fromMap(maps[i]));
   }
 }

@@ -335,28 +335,23 @@ class _InfraccionState extends State<Infraccion> {
             Row(
               children: [
                 Expanded(
+                  flex: 2,
                   child: TextFormField(
                     decoration: const InputDecoration(
                       labelText: "N° de licencia",
                     ),
-
+                    keyboardType: TextInputType.number,
                     validator: (value) =>
                         value!.isEmpty ? 'Campo obligatorio' : null,
                   ),
                 ),
-              ],
-            ),
-
-            Row(
-              children: [
+                const SizedBox(width: 10),
                 Expanded(
+                  flex: 3,
                   child: TextFormField(
                     decoration: const InputDecoration(
                       labelText: "Estado de origen",
                     ),
-
-                    textCapitalization: TextCapitalization
-                        .characters, // Capitaliza la primera letra de cada palabra
                     validator: (value) =>
                         value!.isEmpty ? 'Campo obligatorio' : null,
                   ),
@@ -366,40 +361,24 @@ class _InfraccionState extends State<Infraccion> {
 
             TextFormField(
               decoration: const InputDecoration(labelText: "Nombre(s)"),
-              textCapitalization: TextCapitalization
-                  .characters, // Capitaliza la primera letra de cada palabra
               validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
             ),
             TextFormField(
               decoration: const InputDecoration(labelText: "Apellido paterno"),
-              textCapitalization: TextCapitalization
-                  .characters, // Capitaliza la primera letra de cada palabra
               validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
             ),
             TextFormField(
-              textCapitalization: TextCapitalization
-                  .characters, // Capitaliza la primera letra de cada palabra
               decoration: const InputDecoration(labelText: "Apellido materno"),
-              validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
             ),
 
             Row(
               children: [
                 Expanded(
                   flex: 3,
-                  child: DropdownButtonFormField<String>(
+                  child: TextFormField(
                     decoration: const InputDecoration(labelText: "Género"),
                     validator: (value) =>
-                        value == null ? 'Campo obligatorio' : null,
-                    items: const [
-                      DropdownMenuItem(value: "HOMBRE", child: Text("HOMBRE")),
-                      DropdownMenuItem(value: "MUJER", child: Text("MUJER")),
-                    ],
-                    onChanged: (value) {
-                      // Aquí puedes guardar el valor seleccionado si es necesario
-                      // Ejemplo: setState(() { _generoSeleccionado = value; });
-                    },
-                    hint: const Text("Seleccione género"), // Texto por defecto
+                        value!.isEmpty ? 'Campo obligatorio' : null,
                   ),
                 ),
                 const SizedBox(width: 10),
@@ -423,7 +402,7 @@ class _InfraccionState extends State<Infraccion> {
                   _calleSeleccionada = calle;
                 });
               },
-              labelText: "Calle",
+              labelText: "Calles",
               initialValue: _calleSeleccionada,
             ),
 
@@ -474,7 +453,7 @@ class _InfraccionState extends State<Infraccion> {
 
             TextFormField(
               decoration: const InputDecoration(labelText: "Teléfono"),
-              keyboardType: TextInputType.number,
+              keyboardType: TextInputType.phone,
               validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
             ),
           ],

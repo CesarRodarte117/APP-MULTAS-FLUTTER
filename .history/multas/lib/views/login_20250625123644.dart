@@ -136,7 +136,6 @@ class _loginPageState extends State<LoginPage> {
           final dbHelper = DatabaseHelper();
           final catalogoService = CatalogoService(dbHelper: dbHelper);
 
-          // Verificación y descarga de todos los catálogos
           final countCalles = await dbHelper.countCalles();
           if (countCalles == 0) {
             setState(() {
@@ -154,198 +153,13 @@ class _loginPageState extends State<LoginPage> {
           final countColonias = await dbHelper.countColonias();
           if (countColonias == 0) {
             setState(() {
-              _loadingMessage = 'Descargando colonias...';
+              _loadingMessage = 'Descargando Colonias...';
             });
 
             final success = await catalogoService.descargarColonias();
             if (!success) {
               ScaffoldMessenger.of(context).showSnackBar(
                 SnackBar(content: Text('Error al descargar colonias')),
-              );
-            }
-          }
-
-          final countMarcas = await dbHelper.countMarcas();
-          if (countMarcas == 0) {
-            setState(() {
-              _loadingMessage = 'Descargando marcas...';
-            });
-
-            final success = await catalogoService.descargarMarcas();
-            if (!success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error al descargar marcas')),
-              );
-            }
-          }
-
-          final countSectores = await dbHelper.countSectores();
-          if (countSectores == 0) {
-            setState(() {
-              _loadingMessage = 'Descargando sectores...';
-            });
-
-            final success = await catalogoService.descargarSectores();
-            if (!success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error al descargar sectores')),
-              );
-            }
-          }
-
-          final countUnidades = await dbHelper.countUnidades();
-          if (countUnidades == 0) {
-            setState(() {
-              _loadingMessage = 'Descargando unidades...';
-            });
-
-            final success = await catalogoService.descargarUnidades();
-            if (!success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error al descargar unidades')),
-              );
-            }
-          }
-
-          final countDocumentos = await dbHelper.countDocumentos();
-          if (countDocumentos == 0) {
-            setState(() {
-              _loadingMessage = 'Descargando documentos...';
-            });
-
-            final success = await catalogoService.descargarDocumentos();
-            if (!success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error al descargar documentos')),
-              );
-            }
-          }
-
-          final countEstaciones = await dbHelper.countEstaciones();
-          if (countEstaciones == 0) {
-            setState(() {
-              _loadingMessage = 'Descargando estaciones...';
-            });
-
-            final success = await catalogoService.descargarEstaciones();
-            if (!success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error al descargar estaciones')),
-              );
-            }
-          }
-
-          final countLotes = await dbHelper.countLotes();
-          if (countLotes == 0) {
-            setState(() {
-              _loadingMessage = 'Descargando lotes...';
-            });
-
-            final success = await catalogoService.descargarLotes();
-            if (!success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error al descargar lotes')),
-              );
-            }
-          }
-
-          final countAgentes = await dbHelper.countAgentes();
-          if (countAgentes == 0) {
-            setState(() {
-              _loadingMessage = 'Descargando agentes...';
-            });
-
-            final success = await catalogoService.descargarAgentes();
-            if (!success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error al descargar agentes')),
-              );
-            }
-          }
-
-          final countEstados = await dbHelper.countEstados();
-          if (countEstados == 0) {
-            setState(() {
-              _loadingMessage = 'Descargando estados...';
-            });
-
-            final success = await catalogoService.descargarEstados();
-            if (!success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error al descargar estados')),
-              );
-            }
-          }
-
-          final countDepartamentos = await dbHelper.countDepartamentos();
-          if (countDepartamentos == 0) {
-            setState(() {
-              _loadingMessage = 'Descargando departamentos...';
-            });
-
-            final success = await catalogoService.descargarDepartamentos();
-            if (!success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error al descargar departamentos')),
-              );
-            }
-          }
-          // 1. Para Ciudades
-          final countCiudades = await dbHelper.countCiudades();
-          if (countCiudades == 0) {
-            setState(() {
-              _loadingMessage = 'Descargando ciudades...';
-            });
-
-            final success = await catalogoService.descargarCiudades();
-            if (!success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error al descargar ciudades')),
-              );
-            }
-          }
-
-          // 2. Para Costos
-          final countCostos = await dbHelper.countCostos();
-          if (countCostos == 0) {
-            setState(() {
-              _loadingMessage = 'Descargando costos...';
-            });
-
-            final success = await catalogoService.descargarCostos();
-            if (!success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error al descargar costos')),
-              );
-            }
-          }
-
-          // 3. Para Submarcas
-          final countSubmarcas = await dbHelper.countSubmarcas();
-          if (countSubmarcas == 0) {
-            setState(() {
-              _loadingMessage = 'Descargando submarcas...';
-            });
-
-            final success = await catalogoService.descargarSubmarcas();
-            if (!success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error al descargar submarcas')),
-              );
-            }
-          }
-
-          // 4. Para Motivos
-          final countMotivos = await dbHelper.countMotivos();
-          if (countMotivos == 0) {
-            setState(() {
-              _loadingMessage = 'Descargando motivos...';
-            });
-
-            final success = await catalogoService.descargarMotivos();
-            if (!success) {
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(content: Text('Error al descargar motivos')),
               );
             }
           }

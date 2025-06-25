@@ -196,43 +196,7 @@ class CatalogoService {
         actualizar: actualizar,
       );
 
-  // FALTA: Ciudades, Costos, Submarcas, Motivos
-  Future<bool> descargarCiudades({bool actualizar = false}) =>
-      _descargarCatalogo<Ciudades>(
-        nombreCatalogo: 'ciudades',
-        countLocal: dbHelper.countCiudades,
-        deleteAll: dbHelper.deleteAllCiudades,
-        insert: (ciudad) => dbHelper.insertCiudad(ciudad),
-        getLocal: dbHelper.getCiudades,
-        fromJson: (json) => Ciudades(
-          id: json['id'],
-          clave: json['clave'],
-          nombre: json['nombre'],
-          estado: json['estado'], // Campo adicional
-        ),
-        actualizar: actualizar,
-      );
-
-  Future<bool> descargarCostos({bool actualizar = false}) =>
-      _descargarCatalogo<Costos>(
-        nombreCatalogo: 'costos',
-        countLocal: dbHelper.countCostos,
-        deleteAll: dbHelper.deleteAllCostos,
-        insert: (costo) => dbHelper.insertCosto(costo),
-        getLocal: dbHelper.getCostos,
-        fromJson: (json) => Costos(
-          id: json['id'],
-          periodo: json['periodo'],
-          servicioMedico: json['servicio_medico'],
-          salarioMinimo: json['salario_minimo'],
-          hospedaje: json['hospedaje'],
-          hospedajeDoble: json['hospedaje_doble'],
-          gruaSencilla: json['grua_sencilla'],
-          gruaOperadora: json['grua_operadora'],
-          gruaDoble: json['grua_doble'],
-        ),
-        actualizar: actualizar,
-      );
+  // FALTA: Ciudades, Costos, Submarcas
   Future<bool> descargarSubmarcas({bool actualizar = false}) =>
       _descargarCatalogo<Submarcas>(
         nombreCatalogo: 'submarcas',
@@ -262,7 +226,7 @@ class CatalogoService {
           nombre: json['nombre'],
           uma: json['uma'],
           descuento: json['descuento'],
-          periodo_descuento: json['periodo_descuento'],
+          periodoDescuento: json['periodo_descuento'],
           peritos: json['peritos'],
           articulo: json['articulo'],
           fraccion: json['fraccion'],

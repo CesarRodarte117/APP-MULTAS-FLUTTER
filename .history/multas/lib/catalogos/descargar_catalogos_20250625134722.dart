@@ -262,7 +262,7 @@ class CatalogoService {
           nombre: json['nombre'],
           uma: json['uma'],
           descuento: json['descuento'],
-          periodo_descuento: json['periodo_descuento'],
+          periodoDescuento: json['periodo_descuento'],
           peritos: json['peritos'],
           articulo: json['articulo'],
           fraccion: json['fraccion'],

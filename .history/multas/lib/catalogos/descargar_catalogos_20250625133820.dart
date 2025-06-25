@@ -196,7 +196,7 @@ class CatalogoService {
         actualizar: actualizar,
       );
 
-  // FALTA: Ciudades, Costos, Submarcas, Motivos
+  // 1. Ciudades
   Future<bool> descargarCiudades({bool actualizar = false}) =>
       _descargarCatalogo<Ciudades>(
         nombreCatalogo: 'ciudades',
@@ -204,15 +204,11 @@ class CatalogoService {
         deleteAll: dbHelper.deleteAllCiudades,
         insert: (ciudad) => dbHelper.insertCiudad(ciudad),
         getLocal: dbHelper.getCiudades,
-        fromJson: (json) => Ciudades(
-          id: json['id'],
-          clave: json['clave'],
-          nombre: json['nombre'],
-          estado: json['estado'], // Campo adicional
-        ),
+        fromJson: Ciudades.fromJson,
         actualizar: actualizar,
       );
 
+  // 2. Costos
   Future<bool> descargarCostos({bool actualizar = false}) =>
       _descargarCatalogo<Costos>(
         nombreCatalogo: 'costos',
@@ -220,19 +216,11 @@ class CatalogoService {
         deleteAll: dbHelper.deleteAllCostos,
         insert: (costo) => dbHelper.insertCosto(costo),
         getLocal: dbHelper.getCostos,
-        fromJson: (json) => Costos(
-          id: json['id'],
-          periodo: json['periodo'],
-          servicioMedico: json['servicio_medico'],
-          salarioMinimo: json['salario_minimo'],
-          hospedaje: json['hospedaje'],
-          hospedajeDoble: json['hospedaje_doble'],
-          gruaSencilla: json['grua_sencilla'],
-          gruaOperadora: json['grua_operadora'],
-          gruaDoble: json['grua_doble'],
-        ),
+        fromJson: Costos.fromJson,
         actualizar: actualizar,
       );
+
+  // 3. Submarcas
   Future<bool> descargarSubmarcas({bool actualizar = false}) =>
       _descargarCatalogo<Submarcas>(
         nombreCatalogo: 'submarcas',
@@ -240,36 +228,10 @@ class CatalogoService {
         deleteAll: dbHelper.deleteAllSubmarcas,
         insert: (submarca) => dbHelper.insertSubmarca(submarca),
         getLocal: dbHelper.getSubmarcas,
-        fromJson: (json) => Submarcas(
-          id: json['id'],
-          clave: json['clave'],
-          nombre: json['nombre'],
-          marca: json['marca'], // Relación con marcas
-        ),
+        fromJson: Submarcas.fromJson,
         actualizar: actualizar,
       );
 
-  Future<bool> descargarMotivos({bool actualizar = false}) =>
-      _descargarCatalogo<Motivos>(
-        nombreCatalogo: 'motivos',
-        countLocal: dbHelper.countMotivos,
-        deleteAll: dbHelper.deleteAllMotivos,
-        insert: (motivo) => dbHelper.insertMotivo(motivo),
-        getLocal: dbHelper.getMotivos,
-        fromJson: (json) => Motivos(
-          id: json['id'],
-          clave: json['clave'],
-          nombre: json['nombre'],
-          uma: json['uma'],
-          descuento: json['descuento'],
-          periodo_descuento: json['periodo_descuento'],
-          peritos: json['peritos'],
-          articulo: json['articulo'],
-          fraccion: json['fraccion'],
-          sancion: json['sancion'],
-        ),
-        actualizar: actualizar,
-      );
   // Método para descargar todos los catálogos
   Future<Map<String, bool>> descargarTodosCatalogos({
     bool actualizar = false,
