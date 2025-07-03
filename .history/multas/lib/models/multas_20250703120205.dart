@@ -45,14 +45,7 @@ class Agentes {
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'clave': clave,
-      'nombre': nombre,
-      'paterno': paterno,
-      'materno': materno,
-      'contrasena': contrasena,
-    };
+    return {'id': id, 'clave': clave, 'nombre': nombre};
   }
 }
 

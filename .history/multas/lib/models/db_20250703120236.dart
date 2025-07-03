@@ -73,9 +73,6 @@ class DatabaseHelper {
     id INTEGER PRIMARY KEY,
     clave TEXT,
     nombre TEXT
-    paterno TEXT,
-    materno TEXT,
-    contrasena TEXT
   )
 ''');
 

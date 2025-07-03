@@ -537,14 +537,20 @@ class _InfraccionState extends State<Infraccion> {
         // si la marca es null que no se muestre el autocomplete de submarcas
         if (_marcaSeleccionada != null)
           GenericAutocomplete<Submarcas>(
-            fetchItems: (query) => dbHelper.buscarSubMarcas(
-              query,
-              _marcaSeleccionada!.id.toString(),
-            ),
+            fetchItems: (query) => dbHelper.buscarSubMarcas(query),
             onItemSelected: (submarca) {
-              setState(() {
-                _submarcaSeleccionada = submarca;
-              });
+              if (_marcaSeleccionada == null) {
+                ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(
+                    content: Text('Primero debe seleccionar una marca'),
+                  ),
+                );
+                return;
+              } else {
+                setState(() {
+                  _submarcaSeleccionada = submarca;
+                });
+              }
             },
             itemDisplayName: (submarca) => submarca.nombre ?? '',
             labelText: "Submarca del vehículo",

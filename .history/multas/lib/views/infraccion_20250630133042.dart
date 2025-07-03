@@ -534,22 +534,26 @@ class _InfraccionState extends State<Infraccion> {
         ),
 
         // submarca del vehículo
-        // si la marca es null que no se muestre el autocomplete de submarcas
-        if (_marcaSeleccionada != null)
-          GenericAutocomplete<Submarcas>(
-            fetchItems: (query) => dbHelper.buscarSubMarcas(
-              query,
-              _marcaSeleccionada!.id.toString(),
-            ),
-            onItemSelected: (submarca) {
+        GenericAutocomplete<Submarcas>(
+          fetchItems: (query) => dbHelper.buscarSubMarcas(query),
+          onItemSelected: (submarca) {
+            if (_marcaSeleccionada == null) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Primero debe seleccionar una marca'),
+                ),
+              );
+              return;
+            } else {
               setState(() {
                 _submarcaSeleccionada = submarca;
               });
-            },
-            itemDisplayName: (submarca) => submarca.nombre ?? '',
-            labelText: "Submarca del vehículo",
-            initialValue: _submarcaSeleccionada,
-          ),
+            }
+          },
+          itemDisplayName: (submarca) => submarca.nombre ?? '',
+          labelText: "Submarca del vehículo",
+          initialValue: _submarcaSeleccionada,
+        ),
 
         TextFormField(
           decoration: const InputDecoration(labelText: "Color del vehículo"),

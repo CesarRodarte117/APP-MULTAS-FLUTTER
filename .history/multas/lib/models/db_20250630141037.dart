@@ -9,7 +9,7 @@ export 'db.dart';
 // SELECT id, clave, nombre FROM calles;
 // SELECT id, clave, nombre FROM colonias;
 
-// SELECT id, clave, nombre, PATERNO, MATERNO, CONTRASENA FROM agentes;
+// SELECT id, clave, nombre FROM agentes;
 // SELECT id, clave, nombre FROM estados;
 // SELECT id, clave, nombre FROM departamentos;
 // SELECT id, clave, nombre FROM documentos;
@@ -73,9 +73,6 @@ class DatabaseHelper {
     id INTEGER PRIMARY KEY,
     clave TEXT,
     nombre TEXT
-    paterno TEXT,
-    materno TEXT,
-    contrasena TEXT
   )
 ''');
 
@@ -389,12 +386,11 @@ class DatabaseHelper {
 ''');
 
         await db.execute('''
-  CREATE TABLE submarcas (
+  CREATE TABLE submarcas(
     id INTEGER PRIMARY KEY,
     clave TEXT,
     nombre TEXT,
-    idmarca INTEGER,
-    FOREIGN KEY (idmarca) REFERENCES marcas(id)
+    idmarca TEXT
   )
 ''');
 
@@ -1020,12 +1016,7 @@ class DatabaseHelper {
   // Insertar una marca
   Future<int> insertMarca(Marcas marca) async {
     final db = await database;
-    return await db.insert(
-      'marcas',
-      marca.toMap(),
-      conflictAlgorithm:
-          ConflictAlgorithm.replace, //Sobrescribirá si el ID existe
-    );
+    return await db.insert('marcas', marca.toMap());
   }
 
   // Obtener todas las marcas
@@ -1226,7 +1217,7 @@ class DatabaseHelper {
     final db = await database;
     final results = await db.query(
       'submarcas',
-      where: 'idmarca=? and nombre LIKE ?',
+      where: 'clave=? and nombre LIKE ?',
       whereArgs: ['$id_marca', '%$query%'],
       limit: 6,
     );
@@ -1250,11 +1241,7 @@ class DatabaseHelper {
   // Insertar submarca
   Future<int> insertSubmarca(Submarcas submarca) async {
     final db = await database;
-    return await db.insert(
-      'submarcas',
-      submarca.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    return await db.insert('submarcas', submarca.toMap());
   }
 
   // Obtener todas las submarcas

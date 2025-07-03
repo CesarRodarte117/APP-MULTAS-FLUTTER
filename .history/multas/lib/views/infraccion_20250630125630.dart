@@ -29,9 +29,6 @@ class _InfraccionState extends State<Infraccion> {
   _coloniaSeleccionada; // Variable para almacenar la colonia seleccionada
   Estados?
   _estadoSeleccionado; // Variable para almacenar el estado seleccionado
-  Marcas? _marcaSeleccionada; // Variable para almacenar la marca seleccionada
-  Submarcas?
-  _submarcaSeleccionada; // Variable para almacenar la submarca seleccionada
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? _fotoEvidencia;
@@ -496,60 +493,27 @@ class _InfraccionState extends State<Infraccion> {
   }
 
   Widget _buildVehiculoForm() {
-    final dbHelper = DatabaseHelper();
     return Column(
       children: [
-        // numero de placa
         TextFormField(
           decoration: const InputDecoration(labelText: "Numero de placa"),
           validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
         ),
-
-        // tipo de placa extranjero o nacional dropdown
-        DropdownButtonFormField<String>(
-          decoration: const InputDecoration(labelText: "Tipo de placa"),
-          validator: (value) => value == null ? 'Campo obligatorio' : null,
-          items: const [
-            DropdownMenuItem(value: "NACIONAL", child: Text("NACIONAL")),
-            DropdownMenuItem(value: "EXTRANJERO", child: Text("EXTRANJERO")),
-          ],
-          onChanged: (value) {
-            // Aquí puedes guardar el valor seleccionado si es necesario
-            // Ejemplo: setState(() { _tipoPlacaSeleccionado = value; });
-          },
-          hint: const Text("Seleccione tipo de placa"), // Texto por defecto
-        ),
-
-        // marca del vehículo
-        GenericAutocomplete<Marcas>(
-          fetchItems: (query) => dbHelper.buscarMarcas(query),
-          onItemSelected: (marca) {
-            setState(() {
-              _marcaSeleccionada = marca;
-            });
-          },
-          itemDisplayName: (marca) => marca.nombre,
-          labelText: "Marca del vehículo",
-          initialValue: _marcaSeleccionada,
-        ),
-
-        // submarca del vehículo
-        // si la marca es null que no se muestre el autocomplete de submarcas
-        if (_marcaSeleccionada != null)
-          GenericAutocomplete<Submarcas>(
-            fetchItems: (query) => dbHelper.buscarSubMarcas(
-              query,
-              _marcaSeleccionada!.id.toString(),
-            ),
-            onItemSelected: (submarca) {
-              setState(() {
-                _submarcaSeleccionada = submarca;
-              });
+        // tipo de placa extranjero o nacional
+        Expanded(
+          child: DropdownButtonFormField<String>(
+            decoration: const InputDecoration(labelText: "Tipo de placa"),
+            validator: (value) => value == null ? 'Campo obligatorio' : null,
+            items: const [
+              DropdownMenuItem(value: "NACIONAL", child: Text("NACIONAL")),
+              DropdownMenuItem(value: "EXTRANJERO", child: Text("EXTRANJERO")),
+            ],
+            onChanged: (value) {
+              // Aquí puedes guardar el valor seleccionado si es necesario
             },
-            itemDisplayName: (submarca) => submarca.nombre ?? '',
-            labelText: "Submarca del vehículo",
-            initialValue: _submarcaSeleccionada,
+            hint: const Text("Seleccione tipo de placa"),
           ),
+        ),
 
         TextFormField(
           decoration: const InputDecoration(labelText: "Color del vehículo"),

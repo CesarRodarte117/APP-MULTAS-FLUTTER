@@ -119,13 +119,14 @@ class _loginPageState extends State<LoginPage> {
 
       try {
         // Validar las credenciales
-        final autenticacionUsuarioInstance = AutenticacionUsuario(
+        final AutenticacionUsuario = AutenticacionUsuario(
           dbHelper: DatabaseHelper(),
         );
-        final credencialesValidas = await autenticacionUsuarioInstance
-            .validarCredenciales(matricula: matricula, password: password);
-
-        print('Credenciales válidas: $credencialesValidas');
+        final credencialesValidas =
+            await AutenticacionUsuario.validarCredenciales(
+              matricula: matricula,
+              password: password,
+            );
         if (credencialesValidas) {
           setState(() {
             _errorMessage = null;

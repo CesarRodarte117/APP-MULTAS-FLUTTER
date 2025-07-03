@@ -25,14 +25,6 @@ class _InfraccionState extends State<Infraccion> {
   int _currentStep = 0; // 0=Infractor, 1=Vehículo, 2=Infracción, 3=Evidencia
   final DatabaseHelper _dbHelper = DatabaseHelper();
   Calle? _calleSeleccionada; // Variable para almacenar la calle seleccionada
-  Colonias?
-  _coloniaSeleccionada; // Variable para almacenar la colonia seleccionada
-  Estados?
-  _estadoSeleccionado; // Variable para almacenar el estado seleccionado
-  Marcas? _marcaSeleccionada; // Variable para almacenar la marca seleccionada
-  Submarcas?
-  _submarcaSeleccionada; // Variable para almacenar la submarca seleccionada
-
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? _fotoEvidencia;
   final ImagePicker _picker = ImagePicker();
@@ -355,16 +347,21 @@ class _InfraccionState extends State<Infraccion> {
               ],
             ),
 
-            GenericAutocomplete<Estados>(
-              fetchItems: (query) => dbHelper.buscarEstados(query),
-              onItemSelected: (estado) {
-                setState(() {
-                  _estadoSeleccionado = estado;
-                });
-              },
-              itemDisplayName: (estado) => estado.nombre,
-              labelText: "Estado",
-              initialValue: _estadoSeleccionado,
+            Row(
+              children: [
+                Expanded(
+                  child: TextFormField(
+                    decoration: const InputDecoration(
+                      labelText: "Estado de origen",
+                    ),
+
+                    textCapitalization: TextCapitalization
+                        .characters, // Capitaliza la primera letra de cada palabra
+                    validator: (value) =>
+                        value!.isEmpty ? 'Campo obligatorio' : null,
+                  ),
+                ),
+              ],
             ),
 
             TextFormField(
@@ -453,20 +450,17 @@ class _InfraccionState extends State<Infraccion> {
               ],
             ),
 
-            GenericAutocomplete<Colonias>(
-              fetchItems: (query) => dbHelper.buscarColonias(query),
-              onItemSelected: (colonia) {
-                setState(() {
-                  _coloniaSeleccionada = colonia;
-                });
-              },
-              itemDisplayName: (colonia) => colonia.nombre,
-              labelText: "Colonia",
-              initialValue: _coloniaSeleccionada,
-            ),
-
             Row(
               children: [
+                Expanded(
+                  flex: 3,
+                  child: TextFormField(
+                    decoration: const InputDecoration(labelText: "Colonia"),
+                    validator: (value) =>
+                        value!.isEmpty ? 'Campo obligatorio' : null,
+                  ),
+                ),
+                const SizedBox(width: 10),
                 Expanded(
                   flex: 2,
                   child: TextFormField(
@@ -476,18 +470,13 @@ class _InfraccionState extends State<Infraccion> {
                         value!.isEmpty ? 'Campo obligatorio' : null,
                   ),
                 ),
-                const SizedBox(width: 10),
-
-                Expanded(
-                  flex: 3,
-                  child: TextFormField(
-                    decoration: const InputDecoration(labelText: "Teléfono"),
-                    keyboardType: TextInputType.number,
-                    validator: (value) =>
-                        value!.isEmpty ? 'Campo obligatorio' : null,
-                  ),
-                ),
               ],
+            ),
+
+            TextFormField(
+              decoration: const InputDecoration(labelText: "Teléfono"),
+              keyboardType: TextInputType.number,
+              validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
             ),
           ],
         ),
@@ -496,61 +485,14 @@ class _InfraccionState extends State<Infraccion> {
   }
 
   Widget _buildVehiculoForm() {
-    final dbHelper = DatabaseHelper();
     return Column(
       children: [
-        // numero de placa
         TextFormField(
-          decoration: const InputDecoration(labelText: "Numero de placa"),
-          validator: (value) => value!.isEmpty ? 'Campo obligatorio' : null,
+          decoration: const InputDecoration(labelText: "Marca del vehículo"),
         ),
-
-        // tipo de placa extranjero o nacional dropdown
-        DropdownButtonFormField<String>(
-          decoration: const InputDecoration(labelText: "Tipo de placa"),
-          validator: (value) => value == null ? 'Campo obligatorio' : null,
-          items: const [
-            DropdownMenuItem(value: "NACIONAL", child: Text("NACIONAL")),
-            DropdownMenuItem(value: "EXTRANJERO", child: Text("EXTRANJERO")),
-          ],
-          onChanged: (value) {
-            // Aquí puedes guardar el valor seleccionado si es necesario
-            // Ejemplo: setState(() { _tipoPlacaSeleccionado = value; });
-          },
-          hint: const Text("Seleccione tipo de placa"), // Texto por defecto
+        TextFormField(
+          decoration: const InputDecoration(labelText: "Modelo del vehículo"),
         ),
-
-        // marca del vehículo
-        GenericAutocomplete<Marcas>(
-          fetchItems: (query) => dbHelper.buscarMarcas(query),
-          onItemSelected: (marca) {
-            setState(() {
-              _marcaSeleccionada = marca;
-            });
-          },
-          itemDisplayName: (marca) => marca.nombre,
-          labelText: "Marca del vehículo",
-          initialValue: _marcaSeleccionada,
-        ),
-
-        // submarca del vehículo
-        // si la marca es null que no se muestre el autocomplete de submarcas
-        if (_marcaSeleccionada != null)
-          GenericAutocomplete<Submarcas>(
-            fetchItems: (query) => dbHelper.buscarSubMarcas(
-              query,
-              _marcaSeleccionada!.id.toString(),
-            ),
-            onItemSelected: (submarca) {
-              setState(() {
-                _submarcaSeleccionada = submarca;
-              });
-            },
-            itemDisplayName: (submarca) => submarca.nombre ?? '',
-            labelText: "Submarca del vehículo",
-            initialValue: _submarcaSeleccionada,
-          ),
-
         TextFormField(
           decoration: const InputDecoration(labelText: "Color del vehículo"),
         ),

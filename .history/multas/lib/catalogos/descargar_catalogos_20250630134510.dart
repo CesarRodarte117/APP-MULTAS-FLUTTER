@@ -244,7 +244,7 @@ class CatalogoService {
           id: json['id'],
           clave: json['clave'],
           nombre: json['nombre'],
-          idmarca: json['idmarca'], // Relación con marcas
+          idmarca: json['marca'], // Relación con marcas
         ),
         actualizar: actualizar,
       );

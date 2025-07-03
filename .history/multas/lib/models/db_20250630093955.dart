@@ -9,7 +9,7 @@ export 'db.dart';
 // SELECT id, clave, nombre FROM calles;
 // SELECT id, clave, nombre FROM colonias;
 
-// SELECT id, clave, nombre, PATERNO, MATERNO, CONTRASENA FROM agentes;
+// SELECT id, clave, nombre FROM agentes;
 // SELECT id, clave, nombre FROM estados;
 // SELECT id, clave, nombre FROM departamentos;
 // SELECT id, clave, nombre FROM documentos;
@@ -73,9 +73,6 @@ class DatabaseHelper {
     id INTEGER PRIMARY KEY,
     clave TEXT,
     nombre TEXT
-    paterno TEXT,
-    materno TEXT,
-    contrasena TEXT
   )
 ''');
 
@@ -389,12 +386,11 @@ class DatabaseHelper {
 ''');
 
         await db.execute('''
-  CREATE TABLE submarcas (
+  CREATE TABLE submarcas(
     id INTEGER PRIMARY KEY,
     clave TEXT,
     nombre TEXT,
-    idmarca INTEGER,
-    FOREIGN KEY (idmarca) REFERENCES marcas(id)
+    marca TEXT
   )
 ''');
 
@@ -737,13 +733,13 @@ class DatabaseHelper {
   }
 
   // Obtener todas las colonias
-  Future<List<Colonias>> getColonias() async {
+  Future<List<Calle>> getColonias() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('colonias');
-    return List.generate(maps.length, (i) => Colonias.fromMap(maps[i]));
+    return List.generate(maps.length, (i) => Calle.fromMap(maps[i]));
   }
 
-  Future<List<Colonias>> buscarColonias(String query) async {
+  Future<List<Calle>> buscarColonias(String query) async {
     final db = await database;
     final results = await db.query(
       'colonias',
@@ -751,7 +747,7 @@ class DatabaseHelper {
       whereArgs: ['%$query%'],
       limit: 6, // Limitar resultados para mejor performance
     );
-    return results.map((e) => Colonias.fromJson(e)).toList();
+    return results.map((e) => Calle.fromJson(e)).toList();
   }
 
   // Eliminar todas las colonias
@@ -1020,12 +1016,7 @@ class DatabaseHelper {
   // Insertar una marca
   Future<int> insertMarca(Marcas marca) async {
     final db = await database;
-    return await db.insert(
-      'marcas',
-      marca.toMap(),
-      conflictAlgorithm:
-          ConflictAlgorithm.replace, //Sobrescribirá si el ID existe
-    );
+    return await db.insert('marcas', marca.toMap());
   }
 
   // Obtener todas las marcas
@@ -1221,18 +1212,6 @@ class DatabaseHelper {
   }
 
   // Contar submarcas
-
-  Future<List<Submarcas>> buscarSubMarcas(String query, String id_marca) async {
-    final db = await database;
-    final results = await db.query(
-      'submarcas',
-      where: 'idmarca=? and nombre LIKE ?',
-      whereArgs: ['$id_marca', '%$query%'],
-      limit: 6,
-    );
-    return results.map((e) => Submarcas.fromJson(e)).toList();
-  }
-
   Future<int> countSubmarcas() async {
     final db = await database;
     return Sqflite.firstIntValue(
@@ -1250,11 +1229,7 @@ class DatabaseHelper {
   // Insertar submarca
   Future<int> insertSubmarca(Submarcas submarca) async {
     final db = await database;
-    return await db.insert(
-      'submarcas',
-      submarca.toMap(),
-      conflictAlgorithm: ConflictAlgorithm.replace,
-    );
+    return await db.insert('submarcas', submarca.toMap());
   }
 
   // Obtener todas las submarcas

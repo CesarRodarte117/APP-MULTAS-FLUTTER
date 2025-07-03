@@ -30,8 +30,6 @@ class _InfraccionState extends State<Infraccion> {
   Estados?
   _estadoSeleccionado; // Variable para almacenar el estado seleccionado
   Marcas? _marcaSeleccionada; // Variable para almacenar la marca seleccionada
-  Submarcas?
-  _submarcaSeleccionada; // Variable para almacenar la submarca seleccionada
 
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   String? _fotoEvidencia;
@@ -532,24 +530,6 @@ class _InfraccionState extends State<Infraccion> {
           labelText: "Marca del vehículo",
           initialValue: _marcaSeleccionada,
         ),
-
-        // submarca del vehículo
-        // si la marca es null que no se muestre el autocomplete de submarcas
-        if (_marcaSeleccionada != null)
-          GenericAutocomplete<Submarcas>(
-            fetchItems: (query) => dbHelper.buscarSubMarcas(
-              query,
-              _marcaSeleccionada!.id.toString(),
-            ),
-            onItemSelected: (submarca) {
-              setState(() {
-                _submarcaSeleccionada = submarca;
-              });
-            },
-            itemDisplayName: (submarca) => submarca.nombre ?? '',
-            labelText: "Submarca del vehículo",
-            initialValue: _submarcaSeleccionada,
-          ),
 
         TextFormField(
           decoration: const InputDecoration(labelText: "Color del vehículo"),

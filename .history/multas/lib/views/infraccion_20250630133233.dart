@@ -537,10 +537,7 @@ class _InfraccionState extends State<Infraccion> {
         // si la marca es null que no se muestre el autocomplete de submarcas
         if (_marcaSeleccionada != null)
           GenericAutocomplete<Submarcas>(
-            fetchItems: (query) => dbHelper.buscarSubMarcas(
-              query,
-              _marcaSeleccionada!.id.toString(),
-            ),
+            fetchItems: (query) => dbHelper.buscarSubMarcas(query),
             onItemSelected: (submarca) {
               setState(() {
                 _submarcaSeleccionada = submarca;

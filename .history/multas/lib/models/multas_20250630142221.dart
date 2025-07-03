@@ -8,28 +8,15 @@ import 'package:sqflite/sqflite.dart';
 class Agentes {
   final int? id;
   final String clave;
-  final String? contrasena;
   final String nombre;
-  final String? paterno;
-  final String? materno;
 
-  Agentes({
-    this.id,
-    required this.clave,
-    required this.nombre,
-    this.paterno,
-    this.materno,
-    this.contrasena,
-  });
+  Agentes({this.id, required this.clave, required this.nombre});
 
   factory Agentes.fromJson(Map<String, dynamic> json) {
     return Agentes(
       id: json['id'] as int?,
       clave: json['clave'] ?? '',
       nombre: json['nombre'] ?? '',
-      paterno: json['paterno'] as String?,
-      materno: json['materno'] as String?,
-      contrasena: json['contrasena'] as String?,
     );
   }
 
@@ -38,21 +25,11 @@ class Agentes {
       id: map['id'] as int?,
       clave: map['clave'] as String,
       nombre: map['nombre'] as String,
-      paterno: map['paterno'] as String?,
-      materno: map['materno'] as String?,
-      contrasena: map['contrasena'] as String?,
     );
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'clave': clave,
-      'nombre': nombre,
-      'paterno': paterno,
-      'materno': materno,
-      'contrasena': contrasena,
-    };
+    return {'id': id, 'clave': clave, 'nombre': nombre};
   }
 }
 
@@ -1313,7 +1290,7 @@ class Submarcas {
       id: map['id'],
       clave: map['clave']?.toString(),
       nombre: map['nombre']?.toString(),
-      idmarca: map['idmarca']?.toInt(),
+      idmarca: map['idmarca']?.toString(),
     );
   }
 

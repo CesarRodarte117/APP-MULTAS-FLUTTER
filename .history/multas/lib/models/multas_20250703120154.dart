@@ -38,21 +38,11 @@ class Agentes {
       id: map['id'] as int?,
       clave: map['clave'] as String,
       nombre: map['nombre'] as String,
-      paterno: map['paterno'] as String?,
-      materno: map['materno'] as String?,
-      contrasena: map['contrasena'] as String?,
     );
   }
 
   Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'clave': clave,
-      'nombre': nombre,
-      'paterno': paterno,
-      'materno': materno,
-      'contrasena': contrasena,
-    };
+    return {'id': id, 'clave': clave, 'nombre': nombre};
   }
 }
 
